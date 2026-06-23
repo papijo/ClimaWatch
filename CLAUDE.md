@@ -107,6 +107,12 @@ alembic downgrade -1
 
 ## Critical rules — always follow these
 
+### Implementation plan tracking (non-negotiable)
+
+- After completing any task listed in `docs/implementation-plan.md`, immediately update that file to mark the task as done: change `[ ]` to `[x]`
+- Also update the phase summary table at the top (Done count and % Complete columns)
+- Do this as part of the same work — never leave completed tasks unmarked
+
 ### Database portability (non-negotiable)
 
 - Connect to PostgreSQL using a standard SQLAlchemy connection string ONLY

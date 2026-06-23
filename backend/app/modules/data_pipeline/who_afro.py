@@ -3,8 +3,16 @@ WHO AFRO weekly bulletin ingestion.
 Expected input: parsed text/JSON from https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates
 """
 
+import logging
 from datetime import datetime, timezone
 from typing import Iterator
+
+from sqlalchemy.orm import Session
+
+from app.models.disease_alert import DiseaseAlert
+from app.models.state import State
+
+logger = logging.getLogger(__name__)
 
 
 def parse_bulletin(records: list[dict]) -> Iterator[dict]:
@@ -22,6 +30,48 @@ def parse_bulletin(records: list[dict]) -> Iterator[dict]:
             }
         except (KeyError, TypeError):
             continue
+
+
+def ingest(records: list[dict], db: Session) -> dict[str, int]:
+    state_cache: dict[str, str | None] = {}
+    created = 0
+    skipped = 0
+
+    for parsed in parse_bulletin(records):
+        state_name = parsed.pop("state_name")
+        state_id = _resolve_state(state_name, state_cache, db)
+
+        existing = (
+            db.query(DiseaseAlert)
+            .filter(
+                DiseaseAlert.disease_name == parsed["disease_name"],
+                DiseaseAlert.source == "who_afro",
+                DiseaseAlert.state_id == state_id,
+                DiseaseAlert.is_active.is_(True),
+            )
+            .first()
+        )
+        if existing:
+            skipped += 1
+            continue
+
+        alert = DiseaseAlert(state_id=state_id, **parsed)
+        db.add(alert)
+        created += 1
+
+    db.commit()
+    result = {"created": created, "skipped": skipped}
+    logger.info("WHO AFRO ingest complete: %s", result)
+    return result
+
+
+def _resolve_state(name: str | None, cache: dict, db: Session) -> str | None:
+    if not name:
+        return None
+    if name not in cache:
+        state = db.query(State).filter(State.name.ilike(f"%{name}%")).first()
+        cache[name] = state.id if state else None
+    return cache[name]
 
 
 def _map_level(raw: str) -> str:

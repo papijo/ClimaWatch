@@ -5,7 +5,15 @@ Expects a CSV exported from https://data.humdata.org/dataset/nigeria-health-faci
 
 import csv
 import io
+import logging
 from typing import Iterator
+
+from sqlalchemy.orm import Session
+
+from app.models.health_facility import HealthFacility
+from app.models.state import State
+
+logger = logging.getLogger(__name__)
 
 
 def parse_csv(raw_csv: str) -> Iterator[dict]:
@@ -25,6 +33,47 @@ def parse_csv(raw_csv: str) -> Iterator[dict]:
             }
         except Exception:
             continue
+
+
+def ingest(raw_csv: str, db: Session) -> dict[str, int]:
+    state_cache: dict[str, str | None] = {}
+    created = 0
+    skipped = 0
+    unresolved = 0
+
+    for record in parse_csv(raw_csv):
+        state_name = record.pop("state_name")
+
+        if state_name not in state_cache:
+            state = db.query(State).filter(State.name.ilike(f"%{state_name}%")).first()
+            state_cache[state_name] = state.id if state else None
+
+        state_id = state_cache[state_name]
+        if not state_id:
+            unresolved += 1
+            continue
+
+        existing = (
+            db.query(HealthFacility)
+            .filter(
+                HealthFacility.state_id == state_id,
+                HealthFacility.name == record["name"],
+                HealthFacility.lga == record["lga"],
+            )
+            .first()
+        )
+        if existing:
+            skipped += 1
+            continue
+
+        facility = HealthFacility(state_id=state_id, **record)
+        db.add(facility)
+        created += 1
+
+    db.commit()
+    result = {"created": created, "skipped": skipped, "unresolved_state": unresolved}
+    logger.info("NHFR ingest complete: %s", result)
+    return result
 
 
 def _map_type(raw: str) -> str:

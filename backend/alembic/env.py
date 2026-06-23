@@ -1,11 +1,11 @@
-import os
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# Load all models so Alembic can detect them for autogenerate
+# Import all models so Alembic detects them for autogenerate
 import app.models  # noqa: F401
+from app.config import settings
 from app.database import Base
 
 config = context.config
@@ -13,10 +13,9 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Override sqlalchemy.url with DATABASE_URL from the environment
-database_url = os.environ.get("DATABASE_URL")
-if database_url:
-    config.set_main_option("sqlalchemy.url", database_url)
+# Use DATABASE_URL from pydantic settings (reads from .env automatically)
+# configparser treats % as interpolation — escape it so %3F etc. pass through literally
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 
 target_metadata = Base.metadata
 

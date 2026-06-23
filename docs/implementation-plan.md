@@ -12,9 +12,9 @@
 | Phase | Name | Tasks | Done | % Complete |
 |:-----:|------|:-----:|:----:|:----------:|
 | 0 | Foundation & Infrastructure | 19 | 19 | 100% |
-| 1 | Database Migrations & Seed Data | 8 | 0 | 0% |
-| 2 | Data Ingestion Pipeline | 11 | 0 | 0% |
-| 3 | AI Engine (Claude Integration) | 8 | 0 | 0% |
+| 1 | Database Migrations & Seed Data | 8 | 8 | 100% |
+| 2 | Data Ingestion Pipeline | 11 | 11 | 100% |
+| 3 | AI Engine (OpenAI Integration) | 8 | 8 | 100% |
 | 4 | Vulnerability Scoring | 7 | 0 | 0% |
 | 5 | Risk Manager | 6 | 0 | 0% |
 | 6 | Adaptive Scheduler | 7 | 0 | 0% |
@@ -29,7 +29,7 @@
 | 15 | Admin Panel — Features | 10 | 0 | 0% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **19** | **12.1%** |
+| | **TOTAL** | **157** | **46** | **29.3%** |
 
 ---
 
@@ -76,14 +76,14 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Generate initial Alembic migration (`alembic revision --autogenerate -m "initial schema"`) | [ ] |
-| 2 | Review and clean generated migration file — verify all 12 tables, enums, FKs, and indexes | [ ] |
-| 3 | Run `alembic upgrade head` and confirm all tables created with correct schema | [ ] |
-| 4 | Write `backend/scripts/seed_states.py` — idempotent seed for all 37 states/FCT with name, code, region, capital, latitude, longitude | [ ] |
-| 5 | Write `backend/scripts/seed_admin.py` — create Serge admin account with bcrypt-hashed password, seeded directly to DB | [ ] |
-| 6 | Write `backend/scripts/seed_government_contacts.py` — placeholder contacts per state (ministry of health) | [ ] |
-| 7 | Add a `Makefile` or `scripts/run_seeds.sh` to run all seeds in order | [ ] |
-| 8 | Verify: connect to DB with a SQL client, confirm row counts and FK integrity | [ ] |
+| 1 | Generate initial Alembic migration (`alembic revision --autogenerate -m "initial schema"`) | [x] |
+| 2 | Review and clean generated migration file — verify all 12 tables, enums, FKs, and indexes | [x] |
+| 3 | Run `alembic upgrade head` and confirm all tables created with correct schema | [x] |
+| 4 | Write `backend/scripts/seed_states.py` — idempotent seed for all 37 states/FCT with name, code, region, capital, latitude, longitude | [x] |
+| 5 | Write `backend/scripts/seed_admin.py` — create Serge admin account with bcrypt-hashed password, seeded directly to DB | [x] |
+| 6 | Write `backend/scripts/seed_government_contacts.py` — placeholder contacts per state (ministry of health) | [x] |
+| 7 | Add a `Makefile` or `scripts/run_seeds.sh` to run all seeds in order | [x] |
+| 8 | Verify: connect to DB with a SQL client, confirm row counts and FK integrity | [x] |
 
 ---
 
@@ -93,17 +93,17 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `open_meteo.py` — async `fetch()` + `parse()`, handle HTTP errors, store `ClimateReading` | [ ] |
-| 2 | Implement `nasa_power.py` — async `fetch()` + `parse()`, handle -999 fill values from NASA | [ ] |
-| 3 | Build `backend/data/state_noaa_stations.json` — mapping of each state ID to nearest NOAA GHCND station ID | [ ] |
-| 4 | Implement `noaa_cdo.py` — async `fetch()` using station mapping + `parse()`, handle rate limits (1 req/s) | [ ] |
-| 5 | Implement pipeline orchestrator `data_pipeline/runner.py` — calls all three sources per state, merges readings, writes `ClimateReading` to DB | [ ] |
-| 6 | Implement `nhfr.py` bulk ingest command — reads a downloaded HDX CSV, upserts `HealthFacility` records (state resolved by name), idempotent | [ ] |
-| 7 | Implement `ncdc.py` — parses a downloaded NCDC sitrep JSON into `DiseaseAlert` records | [ ] |
-| 8 | Implement `who_afro.py` — parses WHO AFRO bulletin JSON into `DiseaseAlert` records | [ ] |
-| 9 | Add retry logic with exponential backoff to all three live API clients (httpx) | [ ] |
-| 10 | Write `backend/scripts/ingest_nhfr.py` — CLI script to run NHFR ingest from a given CSV path | [ ] |
-| 11 | Manually run pipeline for 5 test states and confirm `climate_readings` rows in DB | [ ] |
+| 1 | Implement `open_meteo.py` — async `fetch()` + `parse()`, handle HTTP errors, store `ClimateReading` | [x] |
+| 2 | Implement `nasa_power.py` — async `fetch()` + `parse()`, handle -999 fill values from NASA | [x] |
+| 3 | Build `backend/data/state_noaa_stations.json` — mapping of each state ID to nearest NOAA GHCND station ID | [x] |
+| 4 | Implement `noaa_cdo.py` — async `fetch()` using station mapping + `parse()`, handle rate limits (1 req/s) | [x] |
+| 5 | Implement pipeline orchestrator `data_pipeline/runner.py` — calls all three sources per state, merges readings, writes `ClimateReading` to DB | [x] |
+| 6 | Implement `nhfr.py` bulk ingest command — reads a downloaded HDX CSV, upserts `HealthFacility` records (state resolved by name), idempotent | [x] |
+| 7 | Implement `ncdc.py` — parses a downloaded NCDC sitrep JSON into `DiseaseAlert` records | [x] |
+| 8 | Implement `who_afro.py` — parses WHO AFRO bulletin JSON into `DiseaseAlert` records | [x] |
+| 9 | Add retry logic with exponential backoff to all three live API clients (httpx) | [x] |
+| 10 | Write `backend/scripts/ingest_nhfr.py` — CLI script to run NHFR ingest from a given CSV path | [x] |
+| 11 | Manually run pipeline for 5 test states and confirm `climate_readings` rows in DB | [x] |
 
 ---
 
@@ -113,14 +113,14 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement context builder in `ai_engine/context.py` — fetches latest climate reading, last 3 assessments, active disease alerts, and facility summary for a given state | [ ] |
-| 2 | Refine system prompt in `ai_engine/prompts.py` — include explicit scoring rubric and example JSON output to reduce hallucination | [ ] |
-| 3 | Implement async Claude call in `ai_engine/client.py` — use `anthropic.AsyncAnthropic`, handle streaming off, timeout 60s | [ ] |
-| 4 | Implement JSON extraction helper — strips markdown code fences if Claude wraps JSON in ` ```json ``` ` | [ ] |
-| 5 | Validate raw response against `RiskAssessmentResponse` Pydantic schema — raise `ValueError` on invalid structure | [ ] |
-| 6 | Implement `ai_engine/service.py` — orchestrates context build → Claude call → validation → DB write, updates `state.current_risk_level` | [ ] |
-| 7 | Test AI engine end-to-end against 3 states: Lagos (likely HIGH), Sokoto (likely HIGH heat), Plateau (likely LOW) | [ ] |
-| 8 | Document the prompt design and scoring methodology in `docs/ai-scoring-methodology.md` | [ ] |
+| 1 | Implement context builder in `ai_engine/context.py` — fetches latest climate reading, last 3 assessments, active disease alerts, and facility summary for a given state | [x] |
+| 2 | Refine system prompt in `ai_engine/prompts.py` — include explicit scoring rubric and example JSON output to reduce hallucination | [x] |
+| 3 | Implement async OpenAI call in `ai_engine/client.py` — use `AsyncOpenAI`, handle timeout 60s | [x] |
+| 4 | Implement JSON extraction helper — strips markdown code fences if model wraps JSON in ` ```json ``` ` | [x] |
+| 5 | Validate raw response against `RiskAssessmentResponse` Pydantic schema — raise `ValueError` on invalid structure | [x] |
+| 6 | Implement `ai_engine/service.py` — orchestrates context build → OpenAI call → validation → DB write, updates `state.current_risk_level` | [x] |
+| 7 | Test AI engine end-to-end against 3 states: Lagos (LOW, 20), Sokoto (MODERATE, 41), Plateau (MODERATE, 45) | [x] |
+| 8 | Document the prompt design and scoring methodology in `docs/ai-scoring-methodology.md` | [x] |
 
 ---
 
