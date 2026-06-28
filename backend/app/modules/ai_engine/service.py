@@ -7,6 +7,7 @@ from app.models.risk_assessment import RiskAssessment
 from app.models.state import State
 from app.modules.ai_engine.client import assess_state
 from app.modules.ai_engine.context import build_full_context
+from app.modules.risk_manager.manager import apply_risk_transition, build_transition_reason
 
 logger = logging.getLogger(__name__)
 
@@ -41,12 +42,20 @@ async def run_assessment(state_id: str, db: Session) -> RiskAssessment:
         assessed_at=datetime.now(timezone.utc),
     )
     db.add(assessment)
+    db.flush()
 
-    state.current_risk_level = result.risk_level
-    db.commit()
+    reason = build_transition_reason(assessment)
+    changed = apply_risk_transition(db, state, result.risk_level, reason)
 
-    logger.info(
-        "Assessment complete for %s: %s (score=%.1f)",
-        state.name, result.risk_level, result.overall_score,
-    )
+    if changed:
+        logger.info(
+            "Risk level changed for %s: now %s",
+            state.name, result.risk_level,
+        )
+    else:
+        logger.info(
+            "Assessment complete for %s: %s (score=%.1f), no level change",
+            state.name, result.risk_level, result.overall_score,
+        )
+
     return assessment

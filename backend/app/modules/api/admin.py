@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import asyncio
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -8,6 +10,10 @@ from app.models.risk_assessment import RiskAssessment
 from app.models.risk_state_change import RiskStateChange
 from app.modules.auth.dependencies import require_admin
 from app.models.user import User
+from app.modules.scheduler.scheduler import (
+    get_scheduler_status,
+    run_state_assessment,
+)
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -94,6 +100,7 @@ def delete_contact(
 @router.post("/trigger/{state_id}", status_code=status.HTTP_202_ACCEPTED)
 async def trigger_assessment(
     state_id: str,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
@@ -101,4 +108,12 @@ async def trigger_assessment(
     state = db.query(State).filter(State.id == state_id).first()
     if not state:
         raise HTTPException(status_code=404, detail="State not found")
+    background_tasks.add_task(asyncio.ensure_future, run_state_assessment(state_id))
     return {"message": f"Assessment triggered for {state.name}", "state_id": state_id}
+
+
+@router.get("/scheduler/status")
+def scheduler_status(
+    _: User = Depends(require_admin),
+):
+    return get_scheduler_status()

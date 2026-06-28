@@ -1,6 +1,10 @@
 """
-NHFR (National Health Facility Registry) ingestion via HDX dataset download.
-Expects a CSV exported from https://data.humdata.org/dataset/nigeria-health-facilities
+NHFR (National Health Facility Registry) ingestion.
+Supports the GRID3 Nigeria health facilities CSV (v2.0) from:
+  https://data.humdata.org/dataset/nigeria-health-facilities
+
+Run from backend/:
+  python scripts/ingest_nhfr.py ../GRID3_NGA_health_facilities_v2_0_3768559736750290399.csv
 """
 
 import csv
@@ -15,6 +19,12 @@ from app.models.state import State
 
 logger = logging.getLogger(__name__)
 
+BATCH_SIZE = 500
+
+STATE_NAME_ALIASES: dict[str, str] = {
+    "fct": "FCT Abuja",
+}
+
 
 def parse_csv(raw_csv: str) -> Iterator[dict]:
     reader = csv.DictReader(io.StringIO(raw_csv))
@@ -24,11 +34,11 @@ def parse_csv(raw_csv: str) -> Iterator[dict]:
                 "name": row.get("facility_name", "").strip(),
                 "lga": row.get("lga", "").strip(),
                 "state_name": row.get("state", "").strip(),
-                "facility_type": _map_type(row.get("facility_type", "")),
+                "facility_type": _map_type(row.get("facility_level", "")),
                 "ownership": _map_ownership(row.get("ownership", "")),
+                "category": _clean_category(row.get("facility_level_option", "")),
                 "latitude": _float_or_none(row.get("latitude")),
                 "longitude": _float_or_none(row.get("longitude")),
-                "bed_count": _int_or_none(row.get("beds")),
                 "source": "nhfr",
             }
         except Exception:
@@ -36,25 +46,22 @@ def parse_csv(raw_csv: str) -> Iterator[dict]:
 
 
 def ingest(raw_csv: str, db: Session) -> dict[str, int]:
-    state_cache: dict[str, str | None] = {}
+    state_cache: dict[str, str | None] = _build_state_cache(db)
     created = 0
     skipped = 0
     unresolved = 0
+    pending = 0
 
     for record in parse_csv(raw_csv):
         state_name = record.pop("state_name")
+        state_id = state_cache.get(state_name.lower())
 
-        if state_name not in state_cache:
-            state = db.query(State).filter(State.name.ilike(f"%{state_name}%")).first()
-            state_cache[state_name] = state.id if state else None
-
-        state_id = state_cache[state_name]
         if not state_id:
             unresolved += 1
             continue
 
         existing = (
-            db.query(HealthFacility)
+            db.query(HealthFacility.id)
             .filter(
                 HealthFacility.state_id == state_id,
                 HealthFacility.name == record["name"],
@@ -69,6 +76,11 @@ def ingest(raw_csv: str, db: Session) -> dict[str, int]:
         facility = HealthFacility(state_id=state_id, **record)
         db.add(facility)
         created += 1
+        pending += 1
+
+        if pending >= BATCH_SIZE:
+            db.flush()
+            pending = 0
 
     db.commit()
     result = {"created": created, "skipped": skipped, "unresolved_state": unresolved}
@@ -76,35 +88,51 @@ def ingest(raw_csv: str, db: Session) -> dict[str, int]:
     return result
 
 
+def _build_state_cache(db: Session) -> dict[str, str]:
+    """Pre-load all states into a lowercase-name → id lookup, including aliases."""
+    cache: dict[str, str] = {}
+    for state in db.query(State).all():
+        cache[state.name.lower()] = state.id
+    for alias, canonical in STATE_NAME_ALIASES.items():
+        canonical_id = cache.get(canonical.lower())
+        if canonical_id:
+            cache[alias] = canonical_id
+    return cache
+
+
 def _map_type(raw: str) -> str:
-    raw = raw.lower()
-    if "tertiary" in raw or "teaching" in raw or "federal" in raw:
+    val = raw.strip().lower()
+    if val == "tertiary":
         return "tertiary"
-    if "secondary" in raw or "general" in raw or "specialist" in raw:
+    if val == "secondary":
         return "secondary"
-    return "primary"
+    if val == "primary":
+        return "primary"
+    return "unknown"
 
 
 def _map_ownership(raw: str) -> str:
-    raw = raw.lower()
-    if "private" in raw:
+    val = raw.strip().lower()
+    if val == "public":
+        return "public"
+    if val == "private":
         return "private"
-    if "ngo" in raw or "mission" in raw or "international" in raw:
+    if "ngo" in val or "mission" in val:
         return "ngo"
-    if "church" in raw or "mosque" in raw or "faith" in raw:
+    if "faith" in val or "church" in val or "mosque" in val:
         return "faith_based"
-    return "public"
+    return "unknown"
+
+
+def _clean_category(raw: str) -> str | None:
+    val = raw.strip()
+    if not val or val.lower() == "unknown":
+        return None
+    return val
 
 
 def _float_or_none(val: str | None) -> float | None:
     try:
         return float(val)
-    except (TypeError, ValueError):
-        return None
-
-
-def _int_or_none(val: str | None) -> int | None:
-    try:
-        return int(val)
     except (TypeError, ValueError):
         return None

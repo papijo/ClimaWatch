@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
-FacilityType = Enum("primary", "secondary", "tertiary", name="facility_type")
-FacilityOwnership = Enum("public", "private", "ngo", "faith_based", name="facility_ownership")
+FacilityType = Enum("primary", "secondary", "tertiary", "unknown", name="facility_type")
+FacilityOwnership = Enum("public", "private", "ngo", "faith_based", "unknown", name="facility_ownership")
 
 
 class HealthFacility(Base):
@@ -22,6 +22,7 @@ class HealthFacility(Base):
     latitude: Mapped[float | None] = mapped_column(Float)
     longitude: Mapped[float | None] = mapped_column(Float)
     bed_count: Mapped[int | None] = mapped_column(Integer)
+    category: Mapped[str | None] = mapped_column(String(100))
     source: Mapped[str] = mapped_column(String(50), nullable=False, default="nhfr")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

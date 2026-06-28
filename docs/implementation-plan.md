@@ -15,9 +15,9 @@
 | 1 | Database Migrations & Seed Data | 8 | 8 | 100% |
 | 2 | Data Ingestion Pipeline | 11 | 11 | 100% |
 | 3 | AI Engine (OpenAI Integration) | 8 | 8 | 100% |
-| 4 | Vulnerability Scoring | 7 | 0 | 0% |
-| 5 | Risk Manager | 6 | 0 | 0% |
-| 6 | Adaptive Scheduler | 7 | 0 | 0% |
+| 4 | Vulnerability Scoring | 7 | 7 | 100% |
+| 5 | Risk Manager | 6 | 6 | 100% |
+| 6 | Adaptive Scheduler | 7 | 7 | 100% |
 | 7 | Alert Engine | 7 | 0 | 0% |
 | 8 | REST API — Public Routes | 10 | 0 | 0% |
 | 9 | REST API — Auth & User Routes | 8 | 0 | 0% |
@@ -29,7 +29,7 @@
 | 15 | Admin Panel — Features | 10 | 0 | 0% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **46** | **29.3%** |
+| | **TOTAL** | **157** | **66** | **42.0%** |
 
 ---
 
@@ -130,13 +130,13 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Define scoring input data sources — document which fields drive each sub-score (population density from NBS, facility count from NHFR, climate exposure from climate readings) | [ ] |
-| 2 | Implement `lga_scorer.py` fully — weighted formula: population density (35%), health access (40%), climate exposure (25%) | [ ] |
-| 3 | Implement `facility_scorer.py` fully — weighted formula: flood risk (30%), heat stress (25%), disease burden (25%), infrastructure vulnerability (20%) | [ ] |
-| 4 | Build `vulnerability_scoring/runner.py` — batch scoring runner that scores all LGAs per state and all facilities per LGA | [ ] |
-| 5 | Write `backend/scripts/run_scoring.py` — CLI to trigger batch scoring for all states | [ ] |
-| 6 | Run batch scoring, confirm `lga_vulnerability_scores` and `facility_risk_scores` populated | [ ] |
-| 7 | Write unit tests for scoring formulas — verify weighted averages, boundary values (0 and 100) | [ ] |
+| 1 | Define scoring input data sources — document which fields drive each sub-score (population density from NBS, facility count from NHFR, climate exposure from climate readings) | [x] |
+| 2 | Implement `lga_scorer.py` fully — weighted formula: population density (35%), health access (40%), climate exposure (25%) | [x] |
+| 3 | Implement `facility_scorer.py` fully — weighted formula: flood risk (30%), heat stress (25%), disease burden (25%), infrastructure vulnerability (20%) | [x] |
+| 4 | Build `vulnerability_scoring/runner.py` — batch scoring runner that scores all LGAs per state and all facilities per LGA | [x] |
+| 5 | Write `backend/scripts/run_scoring.py` — CLI to trigger batch scoring for all states | [x] |
+| 6 | Run batch scoring, confirm `lga_vulnerability_scores` and `facility_risk_scores` populated | [x] |
+| 7 | Write unit tests for scoring formulas — verify weighted averages, boundary values (0 and 100) | [x] |
 
 ---
 
@@ -146,12 +146,12 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `risk_manager/manager.py` `apply_risk_transition()` fully — writes `RiskStateChange`, updates `State.current_risk_level`, commits in a single transaction | [ ] |
-| 2 | Implement `get_consecutive_low_count()` — queries last N `RiskAssessment` records for a state, returns count of consecutive LOW | [ ] |
-| 3 | Implement `should_downgrade_schedule()` — returns `True` if last 2 assessments are both LOW | [ ] |
-| 4 | Wire `apply_risk_transition()` into `ai_engine/service.py` so every assessment run triggers a transition check | [ ] |
-| 5 | Add `risk_manager` callback hook so alert engine is notified on HIGH/CRITICAL transitions | [ ] |
-| 6 | Write unit tests: LOW→MODERATE, MODERATE→HIGH, HIGH→LOW, LOW×2 downgrade detection | [ ] |
+| 1 | Implement `risk_manager/manager.py` `apply_risk_transition()` fully — writes `RiskStateChange`, updates `State.current_risk_level`, commits in a single transaction | [x] |
+| 2 | Implement `get_consecutive_low_count()` — queries last N `RiskAssessment` records for a state, returns count of consecutive LOW | [x] |
+| 3 | Implement `should_downgrade_schedule()` — returns `True` if last 2 assessments are both LOW | [x] |
+| 4 | Wire `apply_risk_transition()` into `ai_engine/service.py` so every assessment run triggers a transition check | [x] |
+| 5 | Add `risk_manager` callback hook so alert engine is notified on HIGH/CRITICAL transitions | [x] |
+| 6 | Write unit tests: LOW→MODERATE, MODERATE→HIGH, HIGH→LOW, LOW×2 downgrade detection | [x] |
 
 ---
 
@@ -161,13 +161,13 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `scheduler/scheduler.py` `start()` — registers a job per state at startup using the state's current risk level to determine initial cycle | [ ] |
-| 2 | Implement full assessment job function `run_state_assessment(state_id)` — chains: data pipeline → AI engine → risk manager → alert engine → reschedule | [ ] |
-| 3 | Implement `reschedule_state()` — reschedules APScheduler job: MODERATE/HIGH/CRITICAL → 2hr, LOW (after 2 consecutive) → 12hr | [ ] |
-| 4 | Wire lifespan in `app/main.py` — on startup, load all active states from DB, register jobs; on shutdown, graceful APScheduler stop | [ ] |
-| 5 | Implement `POST /api/admin/trigger/{state_id}` — immediately enqueues a one-off assessment job for the given state | [ ] |
-| 6 | Add `GET /api/admin/scheduler/status` — returns all registered jobs with state, next run time, and current interval | [ ] |
-| 7 | Manual test: trigger an assessment for Lagos via admin endpoint, confirm job completed, DB updated | [ ] |
+| 1 | Implement `scheduler/scheduler.py` `start()` — registers a job per state at startup using the state's current risk level to determine initial cycle | [x] |
+| 2 | Implement full assessment job function `run_state_assessment(state_id)` — chains: data pipeline → AI engine → risk manager → alert engine → reschedule | [x] |
+| 3 | Implement `reschedule_state()` — reschedules APScheduler job: MODERATE/HIGH/CRITICAL → 2hr, LOW (after 2 consecutive) → 12hr | [x] |
+| 4 | Wire lifespan in `app/main.py` — on startup, load all active states from DB, register jobs; on shutdown, graceful APScheduler stop | [x] |
+| 5 | Implement `POST /api/admin/trigger/{state_id}` — immediately enqueues a one-off assessment job for the given state | [x] |
+| 6 | Add `GET /api/admin/scheduler/status` — returns all registered jobs with state, next run time, and current interval | [x] |
+| 7 | Manual test: trigger an assessment for Lagos via admin endpoint, confirm job completed, DB updated | [x] |
 
 ---
 
