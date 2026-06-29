@@ -1,0 +1,89 @@
+{
+  "home": {
+    "title": "ClimaWatch",
+    "subtitle": "Usoro ọgụgụ ahụike-ihu igwe nke Nigeria nke AI kwadoro. Nyocha ihe egwu n'oge, ịdọ aka ná ntị, na maapụ ọnọdụ ụlọ ọgwụ maka steeti 36 na FCT."
+  },
+  "nav": {
+    "home": "Ụlọ",
+    "states": "Steeti",
+    "alerts": "Ịdọ Aka Ná Ntị",
+    "diseaseAlerts": "Ịdọ Aka Ná Ntị Ọrịa",
+    "facilities": "Ụlọ Ọgwụ",
+    "login": "Banye",
+    "register": "Debanye Aha",
+    "subscriptions": "Ndenye Aha M",
+    "logout": "Pụọ"
+  },
+  "states": {
+    "title": "Steeti Niile",
+    "riskLevel": "Ọkwa Ihe Egwu",
+    "viewDetails": "Lee Nkọwa",
+    "region": "Mpaghara",
+    "capital": "Isi Obodo"
+  },
+  "stateDetail": {
+    "latestAssessment": "Nyocha Ọhụrụ",
+    "overallScore": "Akara Niile",
+    "climateScore": "Akara Ihu Igwe",
+    "healthScore": "Akara Ahụike",
+    "vulnerabilityScore": "Akara Adịghị Ike",
+    "advisory": "Ndụmọdụ",
+    "lgaBreakdown": "Nkewa Adịghị Ike LGA",
+    "healthFacilities": "Ụlọ Ọgwụ",
+    "noAssessment": "Enweghị nyocha ugbu a."
+  },
+  "alerts": {
+    "title": "Ịdọ Aka Ná Ntị Na-arụ Ọrụ",
+    "history": "Akụkọ Ịdọ Aka Ná Ntị",
+    "noActive": "Enweghị ịdọ aka ná ntị ugbu a.",
+    "startedAt": "Malitere",
+    "endedAt": "Kwụsịrị"
+  },
+  "diseaseAlerts": {
+    "title": "Ịdọ Aka Ná Ntị Ọrịa",
+    "source": "Isi Iyi",
+    "reportedAt": "Akọrọ",
+    "noAlerts": "Enweghị ịdọ aka ná ntị ọrịa ugbu a."
+  },
+  "facilities": {
+    "title": "Ụlọ Ọgwụ",
+    "type": "Ụdị",
+    "ownership": "Onwe",
+    "riskScore": "Akara Ihe Egwu",
+    "lga": "LGA",
+    "filterByState": "Họrọ site na steeti"
+  },
+  "risk": {
+    "LOW": "Ala",
+    "MODERATE": "Etiti",
+    "HIGH": "Elu",
+    "CRITICAL": "Ọ Dị Njọ"
+  },
+  "auth": {
+    "loginTitle": "Banye",
+    "registerTitle": "Mepụta Akaụntụ",
+    "email": "Email",
+    "password": "Okwuntughe",
+    "fullName": "Aha Zuru Oke",
+    "loginButton": "Banye",
+    "registerButton": "Mepụta Akaụntụ",
+    "noAccount": "Ị nweghị akaụntụ?",
+    "hasAccount": "Ị nwere akaụntụ?"
+  },
+  "subscriptions": {
+    "title": "Ndenye Aha M",
+    "selectState": "Họrọ steeti",
+    "notifyModerate": "Mee ka m mara na Etiti",
+    "notifyHigh": "Mee ka m mara na Elu",
+    "notifyCritical": "Mee ka m mara na Ọ Dị Njọ",
+    "subscribe": "Debanye Aha",
+    "unsubscribe": "Kagbuo",
+    "noSubscriptions": "Ị nweghị ndenye aha."
+  },
+  "common": {
+    "loading": "Na-ebu...",
+    "error": "Mperi mere.",
+    "back": "Laghachi",
+    "language": "Asụsụ"
+  }
+}

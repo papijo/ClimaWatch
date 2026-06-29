@@ -24,7 +24,9 @@
       "PowerShell(pip install fastapi httpx starlette)",
       "PowerShell(pip install pydantic-settings email-validator)",
       "PowerShell(pip install \"python-jose[cryptography]\" bcrypt python-multipart)",
-      "PowerShell(pip install resend)"
+      "PowerShell(pip install resend)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)"
     ]
   }
 }

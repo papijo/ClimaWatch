@@ -1,0 +1,89 @@
+{
+  "home": {
+    "title": "ClimaWatch",
+    "subtitle": "Tsarin lura da yanayi da lafiya na Nigeria mai amfani da AI. Kimanta haɗari kai tsaye, gargaɗin farko, da taswirar asibitoci a jihohi 36 da FCT."
+  },
+  "nav": {
+    "home": "Gida",
+    "states": "Jihohi",
+    "alerts": "Faɗakarwa",
+    "diseaseAlerts": "Faɗakarwar Cuta",
+    "facilities": "Asibitoci",
+    "login": "Shiga",
+    "register": "Yi Rajista",
+    "subscriptions": "Biyan Kuɗina",
+    "logout": "Fita"
+  },
+  "states": {
+    "title": "Dukkan Jihohi",
+    "riskLevel": "Matakin Haɗari",
+    "viewDetails": "Duba Cikakkun Bayanai",
+    "region": "Yanki",
+    "capital": "Babban Birni"
+  },
+  "stateDetail": {
+    "latestAssessment": "Sabuwar Kimantawa",
+    "overallScore": "Jimlar Maki",
+    "climateScore": "Makin Yanayi",
+    "healthScore": "Makin Lafiya",
+    "vulnerabilityScore": "Makin Rauni",
+    "advisory": "Shawarwari",
+    "lgaBreakdown": "Rabuwar Rauni ta LGA",
+    "healthFacilities": "Asibitoci",
+    "noAssessment": "Babu kimantawa har yanzu."
+  },
+  "alerts": {
+    "title": "Faɗakarwa Masu Aiki",
+    "history": "Tarihin Faɗakarwa",
+    "noActive": "Babu faɗakarwa a yanzu.",
+    "startedAt": "An Fara",
+    "endedAt": "An Ƙare"
+  },
+  "diseaseAlerts": {
+    "title": "Faɗakarwar Cuta",
+    "source": "Tushe",
+    "reportedAt": "An Bayar da Rahoto",
+    "noAlerts": "Babu faɗakarwar cuta a yanzu."
+  },
+  "facilities": {
+    "title": "Asibitoci",
+    "type": "Nau'i",
+    "ownership": "Mallakar",
+    "riskScore": "Makin Haɗari",
+    "lga": "LGA",
+    "filterByState": "Tace ta jiha"
+  },
+  "risk": {
+    "LOW": "Ƙanƙanta",
+    "MODERATE": "Matsakaici",
+    "HIGH": "Babba",
+    "CRITICAL": "Mai Tsanani"
+  },
+  "auth": {
+    "loginTitle": "Shiga",
+    "registerTitle": "Ƙirƙiri Asusu",
+    "email": "Imel",
+    "password": "Kalmar Sirri",
+    "fullName": "Cikakken Suna",
+    "loginButton": "Shiga",
+    "registerButton": "Ƙirƙiri Asusu",
+    "noAccount": "Ba ku da asusu?",
+    "hasAccount": "Kuna da asusu?"
+  },
+  "subscriptions": {
+    "title": "Biyan Kuɗina",
+    "selectState": "Zaɓi jiha",
+    "notifyModerate": "Sanar da Matsakaici",
+    "notifyHigh": "Sanar da Babba",
+    "notifyCritical": "Sanar da Mai Tsanani",
+    "subscribe": "Yi Rajista",
+    "unsubscribe": "Soke Rajista",
+    "noSubscriptions": "Ba ku da rajista."
+  },
+  "common": {
+    "loading": "Ana lodi...",
+    "error": "An sami kuskure.",
+    "back": "Koma",
+    "language": "Harshe"
+  }
+}

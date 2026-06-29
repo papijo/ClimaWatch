@@ -1,0 +1,89 @@
+{
+  "home": {
+    "title": "ClimaWatch",
+    "subtitle": "Eto imọ ilera-oju ọjọ fun Nigeria ti o ni agbara AI. Ayẹwo ewu ni akoko gidi, ikilo ni kutukutu, ati maapu ailagbara ile-iwosan fun gbogbo ipinlẹ 36 ati FCT."
+  },
+  "nav": {
+    "home": "Ile",
+    "states": "Awọn Ipinlẹ",
+    "alerts": "Ikilo",
+    "diseaseAlerts": "Ikilo Arun",
+    "facilities": "Ile-iwosan",
+    "login": "Wọle",
+    "register": "Forukọsilẹ",
+    "subscriptions": "Awọn Alabapin Mi",
+    "logout": "Jade"
+  },
+  "states": {
+    "title": "Gbogbo Ipinlẹ",
+    "riskLevel": "Ipele Ewu",
+    "viewDetails": "Wo Alaye",
+    "region": "Agbegbe",
+    "capital": "Olu-ilu"
+  },
+  "stateDetail": {
+    "latestAssessment": "Ayẹwo Tuntun",
+    "overallScore": "Ikun Lapapọ",
+    "climateScore": "Ikun Oju Ọjọ",
+    "healthScore": "Ikun Ilera",
+    "vulnerabilityScore": "Ikun Ailagbara",
+    "advisory": "Imọran",
+    "lgaBreakdown": "Ipin Ailagbara LGA",
+    "healthFacilities": "Ile-iwosan",
+    "noAssessment": "Ko si ayẹwo sibẹsibẹ."
+  },
+  "alerts": {
+    "title": "Ikilo Ti N Ṣiṣẹ",
+    "history": "Itan Ikilo",
+    "noActive": "Ko si ikilo lọwọlọwọ.",
+    "startedAt": "Ti Bẹrẹ",
+    "endedAt": "Ti Pari"
+  },
+  "diseaseAlerts": {
+    "title": "Ikilo Arun",
+    "source": "Orisun",
+    "reportedAt": "Ti Royin",
+    "noAlerts": "Ko si ikilo arun lọwọlọwọ."
+  },
+  "facilities": {
+    "title": "Ile-iwosan",
+    "type": "Iru",
+    "ownership": "Onini",
+    "riskScore": "Ikun Ewu",
+    "lga": "LGA",
+    "filterByState": "Ṣe àyọkà nipa ipinlẹ"
+  },
+  "risk": {
+    "LOW": "Kekere",
+    "MODERATE": "Iwọntunwọnsi",
+    "HIGH": "Giga",
+    "CRITICAL": "Pataki"
+  },
+  "auth": {
+    "loginTitle": "Wọle",
+    "registerTitle": "Ṣẹda Akọọlẹ",
+    "email": "Imeeli",
+    "password": "Ọrọ Aṣina",
+    "fullName": "Orukọ Kikun",
+    "loginButton": "Wọle",
+    "registerButton": "Ṣẹda Akọọlẹ",
+    "noAccount": "Ṣe o ni akọọlẹ?",
+    "hasAccount": "Ṣe o ti ni akọọlẹ?"
+  },
+  "subscriptions": {
+    "title": "Awọn Alabapin Mi",
+    "selectState": "Yan ipinlẹ kan",
+    "notifyModerate": "Fi to ni Iwọntunwọnsi",
+    "notifyHigh": "Fi to ni Giga",
+    "notifyCritical": "Fi to ni Pataki",
+    "subscribe": "Forukọsilẹ",
+    "unsubscribe": "Fagilee",
+    "noSubscriptions": "O ko ni alabapin kankan."
+  },
+  "common": {
+    "loading": "N gbero...",
+    "error": "Aṣiṣe kan ṣẹlẹ.",
+    "back": "Pada",
+    "language": "Ede"
+  }
+}

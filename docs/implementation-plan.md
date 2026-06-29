@@ -22,14 +22,14 @@
 | 8 | REST API — Public Routes | 10 | 10 | 100% |
 | 9 | REST API — Auth & User Routes | 8 | 8 | 100% |
 | 10 | REST API — Admin Routes | 7 | 7 | 100% |
-| 11 | Public Frontend — Setup & Config | 8 | 0 | 0% |
+| 11 | Public Frontend — Setup & Config | 8 | 8 | 100% |
 | 12 | Public Frontend — Core Pages | 12 | 0 | 0% |
 | 13 | Public Frontend — i18n & Language Switcher | 5 | 0 | 0% |
 | 14 | Admin Panel — Setup | 6 | 0 | 0% |
 | 15 | Admin Panel — Features | 10 | 0 | 0% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **98** | **62.4%** |
+| | **TOTAL** | **157** | **106** | **67.5%** |
 
 ---
 
@@ -245,14 +245,14 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Initialise Next.js 14 App Router project in `frontend-public/` with TypeScript | [ ] |
-| 2 | Install and configure `next-intl` — set up `i18n.ts`, `middleware.ts`, locale routing (`/en`, `/ha`, `/yo`, `/ig`) | [ ] |
-| 3 | Create base message files: `messages/en.json`, `messages/ha.json`, `messages/yo.json`, `messages/ig.json` — all UI strings, no hardcoded text in JSX | [ ] |
-| 4 | Install and configure Tailwind CSS + base design system (risk level colour tokens: LOW=green, MODERATE=yellow, HIGH=orange, CRITICAL=red) | [ ] |
-| 5 | Install `mapbox-gl` and create `components/Map.tsx` wrapper with SSR disabled | [ ] |
-| 6 | Create `lib/api.ts` — typed fetch client that reads `NEXT_PUBLIC_API_URL` from env, handles errors | [ ] |
-| 7 | Configure `.env.local.example` with `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_MAPBOX_TOKEN` | [ ] |
-| 8 | Configure `vercel.json` for production deployment with correct env var references | [ ] |
+| 1 | Initialise Next.js 14 App Router project in `frontend-public/` with TypeScript | [x] |
+| 2 | Install and configure `next-intl` — set up `i18n.ts`, `middleware.ts`, locale routing (`/en`, `/ha`, `/yo`, `/ig`) | [x] |
+| 3 | Create base message files: `messages/en.json`, `messages/ha.json`, `messages/yo.json`, `messages/ig.json` — all UI strings, no hardcoded text in JSX | [x] |
+| 4 | Install and configure Tailwind CSS + base design system (risk level colour tokens: LOW=green, MODERATE=yellow, HIGH=orange, CRITICAL=red) | [x] |
+| 5 | Install `mapbox-gl` and create `components/Map.tsx` wrapper with SSR disabled | [x] |
+| 6 | Create `lib/api.ts` — typed fetch client that reads `NEXT_PUBLIC_API_URL` from env, handles errors | [x] |
+| 7 | Configure `.env.local.example` with `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_MAPBOX_TOKEN` | [x] |
+| 8 | Configure `vercel.json` for production deployment with correct env var references | [x] |
 
 ---
 

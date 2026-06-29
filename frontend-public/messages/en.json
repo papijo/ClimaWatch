@@ -1,0 +1,89 @@
+{
+  "home": {
+    "title": "ClimaWatch",
+    "subtitle": "AI-powered climate-health intelligence for Nigeria. Real-time risk assessments, early warnings, and health facility vulnerability mapping for all 36 states and FCT."
+  },
+  "nav": {
+    "home": "Home",
+    "states": "States",
+    "alerts": "Alerts",
+    "diseaseAlerts": "Disease Alerts",
+    "facilities": "Facilities",
+    "login": "Login",
+    "register": "Register",
+    "subscriptions": "My Subscriptions",
+    "logout": "Logout"
+  },
+  "states": {
+    "title": "All States",
+    "riskLevel": "Risk Level",
+    "viewDetails": "View Details",
+    "region": "Region",
+    "capital": "Capital"
+  },
+  "stateDetail": {
+    "latestAssessment": "Latest Assessment",
+    "overallScore": "Overall Score",
+    "climateScore": "Climate Score",
+    "healthScore": "Health Score",
+    "vulnerabilityScore": "Vulnerability Score",
+    "advisory": "Advisory",
+    "lgaBreakdown": "LGA Vulnerability Breakdown",
+    "healthFacilities": "Health Facilities",
+    "noAssessment": "No assessment available yet."
+  },
+  "alerts": {
+    "title": "Active Alerts",
+    "history": "Alert History",
+    "noActive": "No active alerts at this time.",
+    "startedAt": "Started",
+    "endedAt": "Ended"
+  },
+  "diseaseAlerts": {
+    "title": "Disease Alerts",
+    "source": "Source",
+    "reportedAt": "Reported",
+    "noAlerts": "No active disease alerts."
+  },
+  "facilities": {
+    "title": "Health Facilities",
+    "type": "Type",
+    "ownership": "Ownership",
+    "riskScore": "Risk Score",
+    "lga": "LGA",
+    "filterByState": "Filter by state"
+  },
+  "risk": {
+    "LOW": "Low",
+    "MODERATE": "Moderate",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "auth": {
+    "loginTitle": "Sign In",
+    "registerTitle": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "loginButton": "Sign In",
+    "registerButton": "Create Account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "subscriptions": {
+    "title": "My Subscriptions",
+    "selectState": "Select a state",
+    "notifyModerate": "Notify on Moderate",
+    "notifyHigh": "Notify on High",
+    "notifyCritical": "Notify on Critical",
+    "subscribe": "Subscribe",
+    "unsubscribe": "Unsubscribe",
+    "noSubscriptions": "You have no active subscriptions."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "back": "Back",
+    "language": "Language"
+  }
+}
