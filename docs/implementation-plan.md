@@ -19,9 +19,9 @@
 | 5 | Risk Manager | 6 | 6 | 100% |
 | 6 | Adaptive Scheduler | 7 | 7 | 100% |
 | 7 | Alert Engine | 7 | 7 | 100% |
-| 8 | REST API — Public Routes | 10 | 0 | 0% |
-| 9 | REST API — Auth & User Routes | 8 | 0 | 0% |
-| 10 | REST API — Admin Routes | 7 | 0 | 0% |
+| 8 | REST API — Public Routes | 10 | 10 | 100% |
+| 9 | REST API — Auth & User Routes | 8 | 8 | 100% |
+| 10 | REST API — Admin Routes | 7 | 7 | 100% |
 | 11 | Public Frontend — Setup & Config | 8 | 0 | 0% |
 | 12 | Public Frontend — Core Pages | 12 | 0 | 0% |
 | 13 | Public Frontend — i18n & Language Switcher | 5 | 0 | 0% |
@@ -29,7 +29,7 @@
 | 15 | Admin Panel — Features | 10 | 0 | 0% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **73** | **46.5%** |
+| | **TOTAL** | **157** | **98** | **62.4%** |
 
 ---
 
@@ -193,16 +193,16 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `GET /api/states` — all 37 states with `current_risk_level`, ordered by name | [ ] |
-| 2 | Implement `GET /api/states/{state_id}` — full state detail including latest assessment | [ ] |
-| 3 | Implement `GET /api/states/{state_id}/lgas` — LGA vulnerability scores sorted by score descending | [ ] |
-| 4 | Implement `GET /api/facilities` — health facilities with latest risk score, optional `?state_id=` filter | [ ] |
-| 5 | Implement `GET /api/alerts/active` — all active HIGH/CRITICAL alerts ordered by `started_at` descending | [ ] |
-| 6 | Implement `GET /api/alerts/history` — resolved alerts with cursor-based pagination (`?cursor=&limit=`) | [ ] |
-| 7 | Implement `GET /api/disease-alerts` — active NCDC/WHO alerts ordered by `reported_at` descending | [ ] |
-| 8 | Implement `GET /api/forecasts/{state_id}` — latest `RiskAssessment` with all advisory language fields | [ ] |
-| 9 | Define Pydantic output schemas for all responses — never expose `password_hash`, internal IDs remain UUIDs | [ ] |
-| 10 | Write API integration tests for all 8 public endpoints using `TestClient` | [ ] |
+| 1 | Implement `GET /api/states` — all 37 states with `current_risk_level`, ordered by name | [x] |
+| 2 | Implement `GET /api/states/{state_id}` — full state detail including latest assessment | [x] |
+| 3 | Implement `GET /api/states/{state_id}/lgas` — LGA vulnerability scores sorted by score descending | [x] |
+| 4 | Implement `GET /api/facilities` — health facilities with latest risk score, optional `?state_id=` filter | [x] |
+| 5 | Implement `GET /api/alerts/active` — all active HIGH/CRITICAL alerts ordered by `started_at` descending | [x] |
+| 6 | Implement `GET /api/alerts/history` — resolved alerts with cursor-based pagination (`?cursor=&limit=`) | [x] |
+| 7 | Implement `GET /api/disease-alerts` — active NCDC/WHO alerts ordered by `reported_at` descending | [x] |
+| 8 | Implement `GET /api/forecasts/{state_id}` — latest `RiskAssessment` with all advisory language fields | [x] |
+| 9 | Define Pydantic output schemas for all responses — never expose `password_hash`, internal IDs remain UUIDs | [x] |
+| 10 | Write API integration tests for all 8 public endpoints using `TestClient` | [x] |
 
 ---
 
@@ -212,14 +212,14 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `POST /api/auth/register` — validate email uniqueness, hash password, return `{id, email}` | [ ] |
-| 2 | Implement `POST /api/auth/login` — verify bcrypt hash, return `{access_token, token_type}` | [ ] |
-| 3 | Implement `get_current_user` dependency — decodes JWT, fetches active user from DB, raises 401 on failure | [ ] |
-| 4 | Implement `GET /api/me/subscriptions` — returns user's active subscriptions with state detail | [ ] |
-| 5 | Implement `POST /api/me/subscriptions` — upsert subscription for a state with notification preferences | [ ] |
-| 6 | Add `DELETE /api/me/subscriptions/{state_id}` — soft-delete (set `is_active = false`) | [ ] |
-| 7 | Input validation: password minimum 8 chars, email format validation via Pydantic `EmailStr` | [ ] |
-| 8 | Write integration tests: register, login, get token, access protected route, invalid token returns 401 | [ ] |
+| 1 | Implement `POST /api/auth/register` — validate email uniqueness, hash password, return `{id, email}` | [x] |
+| 2 | Implement `POST /api/auth/login` — verify bcrypt hash, return `{access_token, token_type}` | [x] |
+| 3 | Implement `get_current_user` dependency — decodes JWT, fetches active user from DB, raises 401 on failure | [x] |
+| 4 | Implement `GET /api/me/subscriptions` — returns user's active subscriptions with state detail | [x] |
+| 5 | Implement `POST /api/me/subscriptions` — upsert subscription for a state with notification preferences | [x] |
+| 6 | Add `DELETE /api/me/subscriptions/{state_id}` — soft-delete (set `is_active = false`) | [x] |
+| 7 | Input validation: password minimum 8 chars, email format validation via Pydantic `EmailStr` | [x] |
+| 8 | Write integration tests: register, login, get token, access protected route, invalid token returns 401 | [x] |
 
 ---
 
@@ -229,13 +229,13 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `require_admin` dependency — wraps `get_current_user`, checks `role == "admin"`, raises 403 | [ ] |
-| 2 | Implement `GET /api/admin/logs` — paginated `RiskStateChange` history across all states | [ ] |
-| 3 | Implement `GET /api/admin/assessments` — paginated assessments, optional `?state_id=` filter | [ ] |
-| 4 | Implement `POST /api/admin/contacts` — create government contact for a state | [ ] |
-| 5 | Implement `PUT /api/admin/contacts/{id}` — update contact fields | [ ] |
-| 6 | Implement `DELETE /api/admin/contacts/{id}` — hard delete | [ ] |
-| 7 | Write integration tests: admin-only routes return 403 for regular users, 401 for unauthenticated | [ ] |
+| 1 | Implement `require_admin` dependency — wraps `get_current_user`, checks `role == "admin"`, raises 403 | [x] |
+| 2 | Implement `GET /api/admin/logs` — paginated `RiskStateChange` history across all states | [x] |
+| 3 | Implement `GET /api/admin/assessments` — paginated assessments, optional `?state_id=` filter | [x] |
+| 4 | Implement `POST /api/admin/contacts` — create government contact for a state | [x] |
+| 5 | Implement `PUT /api/admin/contacts/{id}` — update contact fields | [x] |
+| 6 | Implement `DELETE /api/admin/contacts/{id}` — hard delete | [x] |
+| 7 | Write integration tests: admin-only routes return 403 for regular users, 401 for unauthenticated | [x] |
 
 ---
 

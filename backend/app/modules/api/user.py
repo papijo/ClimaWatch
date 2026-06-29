@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -15,7 +15,7 @@ me_router = APIRouter(prefix="/api/me", tags=["me"])
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8)
     full_name: str
 
 
@@ -95,3 +95,24 @@ def create_subscription(
     db.commit()
     db.refresh(sub)
     return sub
+
+
+@me_router.delete("/subscriptions/{state_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_subscription(
+    state_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    sub = (
+        db.query(UserSubscription)
+        .filter(
+            UserSubscription.user_id == current_user.id,
+            UserSubscription.state_id == state_id,
+        )
+        .first()
+    )
+    if not sub:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+    sub.is_active = False
+    db.commit()
+    return None
