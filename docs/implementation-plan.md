@@ -18,7 +18,7 @@
 | 4 | Vulnerability Scoring | 7 | 7 | 100% |
 | 5 | Risk Manager | 6 | 6 | 100% |
 | 6 | Adaptive Scheduler | 7 | 7 | 100% |
-| 7 | Alert Engine | 7 | 0 | 0% |
+| 7 | Alert Engine | 7 | 7 | 100% |
 | 8 | REST API — Public Routes | 10 | 0 | 0% |
 | 9 | REST API — Auth & User Routes | 8 | 0 | 0% |
 | 10 | REST API — Admin Routes | 7 | 0 | 0% |
@@ -29,7 +29,7 @@
 | 15 | Admin Panel — Features | 10 | 0 | 0% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **66** | **42.0%** |
+| | **TOTAL** | **157** | **73** | **46.5%** |
 
 ---
 
@@ -177,13 +177,13 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Implement `website_alerts.py` — `create_alert()` triggered on HIGH/CRITICAL transition; `resolve_alerts()` triggered on LOW/MODERATE transition | [ ] |
-| 2 | Build subscriber lookup `alert_engine/subscribers.py` — queries `user_subscriptions` filtered by state and risk level threshold | [ ] |
-| 3 | Build branded HTML email template — includes state name, risk level, advisory in user's preferred language, unsubscribe link | [ ] |
-| 4 | Implement `email_dispatch.py` batch sender — loops subscribers, calls Resend, logs successes/failures | [ ] |
-| 5 | Wire alert engine into risk manager callback from Phase 5 — HIGH/CRITICAL → create alert + dispatch emails | [ ] |
-| 6 | Wire disease alert ingestion — when NCDC/WHO AFRO parser produces a new `DiseaseAlert`, create a corresponding `ActiveAlert` if state is affected | [ ] |
-| 7 | Test: manually trigger a HIGH assessment for a state with a test subscriber, confirm email received and `active_alerts` row created | [ ] |
+| 1 | Implement `website_alerts.py` — `create_alert()` triggered on HIGH/CRITICAL transition; `resolve_alerts()` triggered on LOW/MODERATE transition | [x] |
+| 2 | Build subscriber lookup `alert_engine/subscribers.py` — queries `user_subscriptions` filtered by state and risk level threshold | [x] |
+| 3 | Build branded HTML email template — includes state name, risk level, advisory in user's preferred language, unsubscribe link | [x] |
+| 4 | Implement `email_dispatch.py` batch sender — loops subscribers, calls Resend, logs successes/failures | [x] |
+| 5 | Wire alert engine into risk manager callback from Phase 5 — HIGH/CRITICAL → create alert + dispatch emails | [x] |
+| 6 | Wire disease alert ingestion — when NCDC/WHO AFRO parser produces a new `DiseaseAlert`, create a corresponding `ActiveAlert` if state is affected | [x] |
+| 7 | Test: manually trigger a HIGH assessment for a state with a test subscriber, confirm email received and `active_alerts` row created | [x] |
 
 ---
 

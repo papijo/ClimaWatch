@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.models.disease_alert import DiseaseAlert
 from app.models.state import State
+from app.modules.alert_engine.website_alerts import create_disease_website_alert
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,8 @@ def ingest(records: list[dict], db: Session) -> dict[str, int]:
 
         alert = DiseaseAlert(state_id=state_id, **parsed)
         db.add(alert)
+        db.flush()
+        create_disease_website_alert(db, alert)
         created += 1
 
     db.commit()

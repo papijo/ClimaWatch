@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.modules.api.public import router as public_router
 from app.modules.api.user import router as auth_router, me_router
 from app.modules.api.admin import router as admin_router
+from app.modules.alert_engine.handler import on_risk_transition
+from app.modules.risk_manager.manager import register_transition_callback
 from app.modules.scheduler.scheduler import (
     start as start_scheduler,
     stop as stop_scheduler,
@@ -18,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    register_transition_callback(on_risk_transition)
     start_scheduler()
     count = register_all_states()
     logger.info("Scheduler started with %d state jobs", count)
