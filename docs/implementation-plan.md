@@ -23,13 +23,13 @@
 | 9 | REST API — Auth & User Routes | 8 | 8 | 100% |
 | 10 | REST API — Admin Routes | 7 | 7 | 100% |
 | 11 | Public Frontend — Setup & Config | 8 | 8 | 100% |
-| 12 | Public Frontend — Core Pages | 12 | 0 | 0% |
-| 13 | Public Frontend — i18n & Language Switcher | 5 | 0 | 0% |
+| 12 | Public Frontend — Core Pages | 12 | 12 | 100% |
+| 13 | Public Frontend — i18n & Language Switcher | 5 | 5 | 100% |
 | 14 | Admin Panel — Setup | 6 | 0 | 0% |
 | 15 | Admin Panel — Features | 10 | 0 | 0% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **106** | **67.5%** |
+| | **TOTAL** | **157** | **123** | **78.3%** |
 
 ---
 
@@ -262,18 +262,18 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Homepage — full-screen Nigeria Mapbox map with state polygons coloured by current risk level | [ ] |
-| 2 | Map — risk level legend overlay (LOW/MODERATE/HIGH/CRITICAL with colour swatches) | [ ] |
-| 3 | Map — clicking a state polygon navigates to `/states/{id}` | [ ] |
-| 4 | State list page (`/states`) — grid of all 37 states with risk level badge, sortable by risk | [ ] |
-| 5 | State detail page (`/states/{id}`) — risk level banner, latest advisory in selected language, government contacts | [ ] |
-| 6 | State detail — LGA vulnerability breakdown table sorted by score | [ ] |
-| 7 | State detail — health facilities section with mini-map and risk score badges | [ ] |
-| 8 | Active alerts banner — shown site-wide when any HIGH/CRITICAL alert exists, links to alert detail | [ ] |
-| 9 | Disease alerts page (`/disease-alerts`) — active NCDC/WHO AFRO alerts with disease name, level, and state | [ ] |
-| 10 | Alert history page (`/alerts/history`) — infinite scroll using cursor pagination | [ ] |
-| 11 | Auth pages — `/auth/register` and `/auth/login` with form validation, JWT stored in httpOnly cookie | [ ] |
-| 12 | Subscription management page (`/me/subscriptions`) — select states, toggle MODERATE/HIGH/CRITICAL notifications | [ ] |
+| 1 | Homepage — full-screen Nigeria Mapbox map with state polygons coloured by current risk level | [x] |
+| 2 | Map — risk level legend overlay (LOW/MODERATE/HIGH/CRITICAL with colour swatches) | [x] |
+| 3 | Map — clicking a state polygon navigates to `/states/{id}` | [x] |
+| 4 | State list page (`/states`) — grid of all 37 states with risk level badge, sortable by risk | [x] |
+| 5 | State detail page (`/states/{id}`) — risk level banner, latest advisory in selected language, government contacts | [x] |
+| 6 | State detail — LGA vulnerability breakdown table sorted by score | [x] |
+| 7 | State detail — health facilities section with mini-map and risk score badges | [x] |
+| 8 | Active alerts banner — shown site-wide when any HIGH/CRITICAL alert exists, links to alert detail | [x] |
+| 9 | Disease alerts page (`/disease-alerts`) — active NCDC/WHO AFRO alerts with disease name, level, and state | [x] |
+| 10 | Alert history page (`/alerts/history`) — infinite scroll using cursor pagination | [x] |
+| 11 | Auth pages — `/auth/register` and `/auth/login` with form validation, JWT stored in httpOnly cookie | [x] |
+| 12 | Subscription management page (`/me/subscriptions`) — select states, toggle MODERATE/HIGH/CRITICAL notifications | [x] |
 
 ---
 
@@ -283,11 +283,11 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Build `LanguageSwitcher` component — dropdown with EN/HA/YO/IG, updates locale URL prefix | [ ] |
-| 2 | Complete Hausa translations in `messages/ha.json` for all UI strings defined in `en.json` | [ ] |
-| 3 | Complete Yoruba translations in `messages/yo.json` | [ ] |
-| 4 | Complete Igbo translations in `messages/ig.json` | [ ] |
-| 5 | State detail page — render the correct `advisory_{locale}` field from the API based on active locale | [ ] |
+| 1 | Build `LanguageSwitcher` component — dropdown with EN/HA/YO/IG, updates locale URL prefix | [x] |
+| 2 | Complete Hausa translations in `messages/ha.json` for all UI strings defined in `en.json` | [x] |
+| 3 | Complete Yoruba translations in `messages/yo.json` | [x] |
+| 4 | Complete Igbo translations in `messages/ig.json` | [x] |
+| 5 | State detail page — render the correct `advisory_{locale}` field from the API based on active locale | [x] |
 
 ---
 

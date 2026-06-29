@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { notFound } from "next/navigation";
 import { locales, type Locale } from "@/i18n";
+import Navbar from "@/components/Navbar";
+import AlertBanner from "@/components/AlertBanner";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,7 +30,9 @@ export default function LocaleLayout({
     <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
+          <AlertBanner />
+          <Navbar />
+          <main>{children}</main>
         </NextIntlClientProvider>
       </body>
     </html>
