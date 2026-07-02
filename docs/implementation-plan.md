@@ -25,11 +25,11 @@
 | 11 | Public Frontend — Setup & Config | 8 | 8 | 100% |
 | 12 | Public Frontend — Core Pages | 12 | 12 | 100% |
 | 13 | Public Frontend — i18n & Language Switcher | 5 | 5 | 100% |
-| 14 | Admin Panel — Setup | 6 | 0 | 0% |
-| 15 | Admin Panel — Features | 10 | 0 | 0% |
+| 14 | Admin Panel — Setup | 6 | 6 | 100% |
+| 15 | Admin Panel — Features | 10 | 10 | 100% |
 | 16 | Testing & QA | 9 | 0 | 0% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **123** | **78.3%** |
+| | **TOTAL** | **157** | **139** | **88.5%** |
 
 ---
 
@@ -297,12 +297,12 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Initialise project in `frontend-admin/` with Vite + React 18 + TypeScript template | [ ] |
-| 2 | Install and configure Tailwind CSS | [ ] |
-| 3 | Set up React Router v6 with protected route wrapper (redirects to `/login` if no valid JWT in `localStorage`) | [ ] |
-| 4 | Create `src/lib/api.ts` — typed API client that attaches `Authorization: Bearer {token}` header to every request | [ ] |
-| 5 | Configure `.env.example` with `VITE_API_URL` | [ ] |
-| 6 | Configure Render Static Site deployment — `render.yaml` with build command `npm run build` and publish dir `dist` | [ ] |
+| 1 | Initialise project in `frontend-admin/` with Vite + React 18 + TypeScript template | [x] |
+| 2 | Install and configure Tailwind CSS | [x] |
+| 3 | Set up React Router v6 with protected route wrapper (redirects to `/login` if no valid JWT in `localStorage`) | [x] |
+| 4 | Create `src/lib/api.ts` — typed API client that attaches `Authorization: Bearer {token}` header to every request | [x] |
+| 5 | Configure `.env.example` with `VITE_API_URL` | [x] |
+| 6 | Configure Render Static Site deployment — `render.yaml` with build command `npm run build` and publish dir `dist` | [x] |
 
 ---
 
@@ -312,16 +312,16 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Login page — email/password form, calls `POST /api/auth/login`, stores JWT, redirects to dashboard | [ ] |
-| 2 | Dashboard (`/`) — grid of all 37 states with current risk level badge and last assessed timestamp | [ ] |
-| 3 | State detail modal/page — latest full assessment (all scores, all language advisories) | [ ] |
-| 4 | Manual trigger button on state detail — calls `POST /api/admin/trigger/{state_id}`, shows loading state | [ ] |
-| 5 | Government contacts page (`/contacts`) — table with inline edit and delete, `POST/PUT/DELETE` wired to API | [ ] |
-| 6 | Risk change logs page (`/logs`) — paginated table of all `RiskStateChange` records with from/to level and timestamp | [ ] |
-| 7 | Assessment history page (`/assessments`) — filterable by state, paginated, shows scores and risk level | [ ] |
-| 8 | Scheduler status page (`/scheduler`) — shows all 37 state jobs, current interval, and next run time | [ ] |
-| 9 | Protected routes — `require_admin` check via JWT role claim; non-admin JWT redirects to login | [ ] |
-| 10 | Logout — clears JWT from localStorage, redirects to login | [ ] |
+| 1 | Login page — email/password form, calls `POST /api/auth/login`, stores JWT, redirects to dashboard | [x] |
+| 2 | Dashboard (`/`) — grid of all 37 states with current risk level badge and last assessed timestamp | [x] |
+| 3 | State detail modal/page — latest full assessment (all scores, all language advisories) | [x] |
+| 4 | Manual trigger button on state detail — calls `POST /api/admin/trigger/{state_id}`, shows loading state | [x] |
+| 5 | Government contacts page (`/contacts`) — table with inline edit and delete, `POST/PUT/DELETE` wired to API | [x] |
+| 6 | Risk change logs page (`/logs`) — paginated table of all `RiskStateChange` records with from/to level and timestamp | [x] |
+| 7 | Assessment history page (`/assessments`) — filterable by state, paginated, shows scores and risk level | [x] |
+| 8 | Scheduler status page (`/scheduler`) — shows all 37 state jobs, current interval, and next run time | [x] |
+| 9 | Protected routes — `require_admin` check via JWT role claim; non-admin JWT redirects to login | [x] |
+| 10 | Logout — clears JWT from localStorage, redirects to login | [x] |
 
 ---
 
