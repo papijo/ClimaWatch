@@ -1,9 +1,17 @@
-"""Shared test fixtures — in-memory SQLite database with test data."""
+"""Shared test fixtures.
+
+Default: in-memory SQLite (fast, no external deps).
+PostgreSQL: set TEST_DATABASE_URL — Alembic migrations are applied once per session.
+"""
 
 import os
+import pathlib
+
+_TEST_DB_URL = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
+
 os.environ.update({
-    "DATABASE_URL": "sqlite:///:memory:",
-    "OPENAI_API_KEY": "test",
+    "DATABASE_URL": _TEST_DB_URL,
+    "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY", "test"),
     "RESEND_API_KEY": "test",
     "JWT_SECRET": "testsecret",
     "MAPBOX_TOKEN": "test",
@@ -27,12 +35,28 @@ from app.models.health_facility import HealthFacility
 from app.models.lga_vulnerability_score import LGAVulnerabilityScore
 from app.models.facility_risk_score import FacilityRiskScore
 
-TEST_ENGINE = create_engine(
-    "sqlite:///:memory:",
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
+if "sqlite" in _TEST_DB_URL:
+    TEST_ENGINE = create_engine(
+        _TEST_DB_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+else:
+    TEST_ENGINE = create_engine(_TEST_DB_URL)
+
 TestSession = sessionmaker(autocommit=False, autoflush=False, bind=TEST_ENGINE)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _apply_migrations():
+    """When TEST_DATABASE_URL points to PostgreSQL, apply Alembic migrations once."""
+    if "sqlite" not in _TEST_DB_URL:
+        from alembic import command
+        from alembic.config import Config as AlembicConfig
+        alembic_ini = str(pathlib.Path(__file__).parent.parent / "alembic.ini")
+        cfg = AlembicConfig(alembic_ini)
+        cfg.set_main_option("sqlalchemy.url", _TEST_DB_URL)
+        command.upgrade(cfg, "head")
 
 
 @event.listens_for(TEST_ENGINE, "connect")

@@ -60,15 +60,28 @@
     "CRITICAL": "Mai Tsanani"
   },
   "auth": {
-    "loginTitle": "Shiga",
+    "loginTitle": "Barka da Komawa",
+    "loginSubtitle": "Shiga don sarrafa biyan kuɗin faɗakarwar yanayi da lafiya.",
     "registerTitle": "Ƙirƙiri Asusu",
+    "registerSubtitle": "Fara karɓar faɗakarwar lafiya da yanayi na jiharku.",
     "email": "Imel",
     "password": "Kalmar Sirri",
     "fullName": "Cikakken Suna",
     "loginButton": "Shiga",
     "registerButton": "Ƙirƙiri Asusu",
     "noAccount": "Ba ku da asusu?",
-    "hasAccount": "Kuna da asusu?"
+    "hasAccount": "Kuna da asusu?",
+    "forgotPassword": "Manta Kalmar Sirri?",
+    "forgotPasswordTitle": "Manta kalmar sirri?",
+    "forgotPasswordSubtitle": "Shigar da imelinka za mu aiko maka da hanyar sauya kalmar sirri.",
+    "sendResetLink": "Aika Hanyar Sauya",
+    "resetSuccess": "Duba imelinka — idan an yi rajista, hanyar sake saita za ta iso.",
+    "backToLogin": "Koma Shiga",
+    "resetPasswordTitle": "Saita Sabuwar Kalmar Sirri",
+    "resetPasswordSubtitle": "Shigar da sabuwar kalmar sirri a ƙasa. Dole ta kasance haruffa 8 ko fiye.",
+    "newPassword": "Sabuwar Kalmar Sirri",
+    "resetPasswordButton": "Sake Saita Kalmar Sirri",
+    "resetPasswordSuccess": "An sabunta kalmar sirrinka. Yanzu zaka iya shiga."
   },
   "subscriptions": {
     "title": "Biyan Kuɗina",

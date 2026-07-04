@@ -3,8 +3,7 @@ import { Inter } from "next/font/google";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { notFound } from "next/navigation";
 import { locales, type Locale } from "@/i18n";
-import Navbar from "@/components/Navbar";
-import AlertBanner from "@/components/AlertBanner";
+import NavWrapper from "@/components/NavWrapper";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -14,6 +13,8 @@ export const metadata: Metadata = {
   description:
     "AI-powered climate-health risk assessments, early warnings, and health facility vulnerability mapping for all 36 Nigerian states and FCT.",
 };
+
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})();`;
 
 export default function LocaleLayout({
   children,
@@ -27,11 +28,13 @@ export default function LocaleLayout({
   const messages = useMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AlertBanner />
-          <Navbar />
+          <NavWrapper />
           <main>{children}</main>
         </NextIntlClientProvider>
       </body>

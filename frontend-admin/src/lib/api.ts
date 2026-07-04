@@ -36,10 +36,10 @@ export interface Assessment {
   id: string
   state_id: string
   risk_level: string
-  composite_score: number
-  heat_stress_score: number
-  flood_risk_score: number
-  disease_risk_score: number
+  overall_score: number
+  climate_score: number
+  health_score: number
+  vulnerability_score: number
   advisory_en: string
   advisory_ha: string
   advisory_yo: string
@@ -51,9 +51,10 @@ export interface GovernmentContact {
   id: string
   state_id: string
   name: string
-  role: string
+  title: string
+  ministry: string
   phone: string | null
-  email: string | null
+  email: string
 }
 
 export interface RiskStateChange {
@@ -157,6 +158,22 @@ export async function deleteContact(token: string, id: string): Promise<void> {
 export async function getLogs(token: string, cursor?: string): Promise<LogsResponse> {
   const qs = cursor ? `?cursor=${cursor}` : ''
   return request<LogsResponse>(`/api/admin/logs${qs}`, {}, token)
+}
+
+// --- Password reset ---
+
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  return request<{ message: string }>('/api/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email, target: 'admin' }),
+  })
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  return request<{ message: string }>('/api/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, new_password: newPassword }),
+  })
 }
 
 // --- Admin: Scheduler ---

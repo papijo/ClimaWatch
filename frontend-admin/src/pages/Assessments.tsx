@@ -77,7 +77,7 @@ export default function Assessments() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
               <tr>
-                {['State', 'Risk', 'Composite', 'Heat', 'Flood', 'Disease', 'Date'].map((h) => (
+                {['State', 'Risk', 'Overall', 'Climate', 'Health', 'Vulnerability', 'Date'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 font-medium whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -98,10 +98,10 @@ export default function Assessments() {
                       {stateName(item.state_id)}
                     </td>
                     <td className="px-4 py-3"><RiskBadge level={item.risk_level} /></td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.composite_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.heat_stress_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.flood_risk_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.disease_risk_score.toFixed(1)}</td>
+                    <td className="px-4 py-3 font-mono text-slate-700">{item.overall_score.toFixed(1)}</td>
+                    <td className="px-4 py-3 font-mono text-slate-700">{item.climate_score.toFixed(1)}</td>
+                    <td className="px-4 py-3 font-mono text-slate-700">{item.health_score.toFixed(1)}</td>
+                    <td className="px-4 py-3 font-mono text-slate-700">{item.vulnerability_score.toFixed(1)}</td>
                     <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                       {new Date(item.assessed_at).toLocaleString()}
                     </td>

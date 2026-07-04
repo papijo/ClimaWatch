@@ -60,15 +60,28 @@
     "CRITICAL": "Ọ Dị Njọ"
   },
   "auth": {
-    "loginTitle": "Banye",
+    "loginTitle": "Nnọọ na Azụlà",
+    "loginSubtitle": "Banye iji jikwaa ndenye aha ọchịchọ ihu igwe gị.",
     "registerTitle": "Mepụta Akaụntụ",
+    "registerSubtitle": "Bido nnata ọchịchọ ahụike-ihu igwe maka steeti gị.",
     "email": "Email",
     "password": "Okwuntughe",
     "fullName": "Aha Zuru Oke",
     "loginButton": "Banye",
     "registerButton": "Mepụta Akaụntụ",
     "noAccount": "Ị nweghị akaụntụ?",
-    "hasAccount": "Ị nwere akaụntụ?"
+    "hasAccount": "Ị nwere akaụntụ?",
+    "forgotPassword": "Chefuo okwuntughe?",
+    "forgotPasswordTitle": "Chefuo okwuntughe gị?",
+    "forgotPasswordSubtitle": "Tinye email gị wee anyị ziga gị njikọ iji tọgharia okwuntughe gị.",
+    "sendResetLink": "Zipu njikọ ntọghachi",
+    "resetSuccess": "Lelee igbe email gị — ọ bụrụ na email ahụ edenyere aha, njikọ ntọghachi agaara.",
+    "backToLogin": "Laghachi Banye",
+    "resetPasswordTitle": "Tọọ okwuntughe ọhụrụ",
+    "resetPasswordSubtitle": "Tinye okwuntughe ọhụrụ gị n'okpuru. Ọ dịrịkwa opekata mpe akpọmkpọ 8.",
+    "newPassword": "Okwuntughe ọhụrụ",
+    "resetPasswordButton": "Tọgharia okwuntughe",
+    "resetPasswordSuccess": "Okwuntughe gị agbanweela. Ị nwere ike ịbanye ugbu a."
   },
   "subscriptions": {
     "title": "Ndenye Aha M",

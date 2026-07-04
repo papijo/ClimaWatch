@@ -86,30 +86,34 @@ class TestAdminAuth:
 
 
 class TestAdminLogs:
-    def test_returns_logs(self, admin_client, admin_user):
+    def test_returns_paginated_logs(self, admin_client, admin_user):
         headers = _admin_headers(admin_user)
         resp = admin_client.get("/api/admin/logs", headers=headers)
         assert resp.status_code == 200
-        assert isinstance(resp.json(), list)
+        data = resp.json()
+        assert "items" in data
+        assert "next_cursor" in data
+        assert isinstance(data["items"], list)
 
 
 class TestAdminAssessments:
-    def test_returns_assessments(self, admin_client, admin_user, seed_assessment):
+    def test_returns_paginated_assessments(self, admin_client, admin_user, seed_assessment):
         headers = _admin_headers(admin_user)
         resp = admin_client.get("/api/admin/assessments", headers=headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert len(data) == 1
+        assert "items" in data
+        assert len(data["items"]) == 1
 
     def test_filter_by_state(self, admin_client, admin_user, seed_assessment):
         headers = _admin_headers(admin_user)
         resp = admin_client.get("/api/admin/assessments?state_id=state-lagos", headers=headers)
         assert resp.status_code == 200
-        assert len(resp.json()) == 1
+        assert len(resp.json()["items"]) == 1
 
         resp = admin_client.get("/api/admin/assessments?state_id=nonexistent", headers=headers)
         assert resp.status_code == 200
-        assert resp.json() == []
+        assert resp.json()["items"] == []
 
 
 class TestAdminContacts:

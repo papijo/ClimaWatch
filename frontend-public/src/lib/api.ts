@@ -192,6 +192,18 @@ export const api = {
       method: "DELETE",
       headers: authHeaders(token),
     }),
+
+  forgotPassword: (email: string, locale = "en") =>
+    request<{ message: string }>("/api/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email, locale }),
+    }),
+
+  resetPassword: (token: string, newPassword: string) =>
+    request<{ message: string }>("/api/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, new_password: newPassword }),
+    }),
 };
 
 export { ApiError };

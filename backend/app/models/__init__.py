@@ -10,6 +10,7 @@ from app.models.health_facility import HealthFacility
 from app.models.facility_risk_score import FacilityRiskScore
 from app.models.lga_vulnerability_score import LGAVulnerabilityScore
 from app.models.disease_alert import DiseaseAlert
+from app.models.password_reset_token import PasswordResetToken
 
 __all__ = [
     "State",
@@ -24,4 +25,5 @@ __all__ = [
     "FacilityRiskScore",
     "LGAVulnerabilityScore",
     "DiseaseAlert",
+    "PasswordResetToken",
 ]

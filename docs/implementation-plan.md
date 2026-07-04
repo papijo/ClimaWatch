@@ -27,9 +27,9 @@
 | 13 | Public Frontend — i18n & Language Switcher | 5 | 5 | 100% |
 | 14 | Admin Panel — Setup | 6 | 6 | 100% |
 | 15 | Admin Panel — Features | 10 | 10 | 100% |
-| 16 | Testing & QA | 9 | 0 | 0% |
+| 16 | Testing & QA | 9 | 9 | 100% |
 | 17 | Deployment & Go-Live | 9 | 0 | 0% |
-| | **TOTAL** | **157** | **139** | **88.5%** |
+| | **TOTAL** | **157** | **148** | **94.3%** |
 
 ---
 
@@ -331,15 +331,15 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 
 | # | Task | Status |
 |---|------|:------:|
-| 1 | Set up `pytest` with a test PostgreSQL database (separate `TEST_DATABASE_URL`), auto-apply migrations before test run | [ ] |
-| 2 | Unit tests — AI engine: mock OpenAI API response, assert `RiskAssessmentResponse` validates correctly; assert invalid JSON raises `ValueError` | [ ] |
-| 3 | Unit tests — scoring algorithms: LGA and facility weighted formulas, boundary values (0.0 and 100.0) | [ ] |
-| 4 | Unit tests — auth: `hash_password` / `verify_password` round-trip; `create_access_token` / `decode_token` round-trip | [ ] |
-| 5 | Unit tests — risk manager: transition logic, `get_consecutive_low_count`, scheduler downgrade threshold | [ ] |
-| 6 | Integration tests — all 8 public API routes: assert status codes, response shapes, and cursor pagination | [ ] |
-| 7 | Integration tests — auth routes: register → login → access protected → expired token → 401 | [ ] |
-| 8 | Integration tests — admin routes: 403 for regular user, 401 for unauthenticated, correct data for admin | [ ] |
-| 9 | End-to-end smoke test: run data pipeline → AI engine → risk manager → alert engine for Lagos; assert `risk_assessments` row, `risk_state_changes` row, and `active_alerts` row (if HIGH+) all exist | [ ] |
+| 1 | Set up `pytest` with a test PostgreSQL database (separate `TEST_DATABASE_URL`), auto-apply migrations before test run | [x] |
+| 2 | Unit tests — AI engine: mock OpenAI API response, assert `RiskAssessmentResponse` validates correctly; assert invalid JSON raises `ValueError` | [x] |
+| 3 | Unit tests — scoring algorithms: LGA and facility weighted formulas, boundary values (0.0 and 100.0) | [x] |
+| 4 | Unit tests — auth: `hash_password` / `verify_password` round-trip; `create_access_token` / `decode_token` round-trip | [x] |
+| 5 | Unit tests — risk manager: transition logic, `get_consecutive_low_count`, scheduler downgrade threshold | [x] |
+| 6 | Integration tests — all 8 public API routes: assert status codes, response shapes, and cursor pagination | [x] |
+| 7 | Integration tests — auth routes: register → login → access protected → expired token → 401 | [x] |
+| 8 | Integration tests — admin routes: 403 for regular user, 401 for unauthenticated, correct data for admin | [x] |
+| 9 | End-to-end smoke test: run data pipeline → AI engine → risk manager → alert engine for Lagos; assert `risk_assessments` row, `risk_state_changes` row, and `active_alerts` row (if HIGH+) all exist | [x] |
 
 ---
 
@@ -350,8 +350,8 @@ Each phase depends on the one before it being fully functional. Do not skip ahea
 | # | Task | Status |
 |---|------|:------:|
 | 1 | Create Render Web Service for `backend/` — build command: `pip install -r requirements.txt`, start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT` | [ ] |
-| 2 | Set all 6 production env vars on Render (`DATABASE_URL`, `OPENAI_API_KEY`, `RESEND_API_KEY`, `JWT_SECRET`, `MAPBOX_TOKEN`, `NOAA_TOKEN`) | [ ] |
-| 3 | Run `alembic upgrade head` in production — confirm all 12 tables created on Supabase PostgreSQL | [ ] |
+| 2 | Set all 7 production env vars on Render (`DATABASE_URL`, `OPENAI_API_KEY`, `RESEND_API_KEY`, `JWT_SECRET`, `MAPBOX_TOKEN`, `NOAA_TOKEN`, `FRONTEND_URL`) | [ ] |
+| 3 | Run `alembic upgrade head` in production — confirm all 13 tables created on Supabase PostgreSQL (includes `password_reset_tokens`) | [ ] |
 | 4 | Run all seed scripts in production (`seed_states.py`, `seed_admin.py`, `seed_government_contacts.py`) | [ ] |
 | 5 | Create Vercel project for `frontend-public/` — link GitHub repo, set `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_MAPBOX_TOKEN` | [ ] |
 | 6 | Create Render Static Site for `frontend-admin/` — build `npm run build`, publish `dist/`, set `VITE_API_URL` | [ ] |

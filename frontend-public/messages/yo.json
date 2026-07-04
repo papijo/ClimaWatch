@@ -60,15 +60,28 @@
     "CRITICAL": "Pataki"
   },
   "auth": {
-    "loginTitle": "Wọle",
+    "loginTitle": "Ẹ káàbọ̀ padà",
+    "loginSubtitle": "Wọle lati ṣakoso awọn alabapin ikilo oju-ọjọ rẹ.",
     "registerTitle": "Ṣẹda Akọọlẹ",
+    "registerSubtitle": "Bẹrẹ gbigba awọn ikilo ilera-oju ọjọ fun ipinlẹ rẹ.",
     "email": "Imeeli",
     "password": "Ọrọ Aṣina",
     "fullName": "Orukọ Kikun",
     "loginButton": "Wọle",
     "registerButton": "Ṣẹda Akọọlẹ",
     "noAccount": "Ṣe o ni akọọlẹ?",
-    "hasAccount": "Ṣe o ti ni akọọlẹ?"
+    "hasAccount": "Ṣe o ti ni akọọlẹ?",
+    "forgotPassword": "Gbagbe ọrọ aṣina?",
+    "forgotPasswordTitle": "Gbagbe ọrọ aṣina rẹ?",
+    "forgotPasswordSubtitle": "Tẹ imeeli rẹ sii a o si fi ọna atunto ranṣẹ si ọ.",
+    "sendResetLink": "Fi ọna atunto ranṣẹ",
+    "resetSuccess": "Ṣayẹwo apoti imeeli rẹ — ti imeeli naa ba forukọsilẹ, ọna atunto ti ranṣẹ.",
+    "backToLogin": "Pada si Wíwọlé",
+    "resetPasswordTitle": "Ṣeto ọrọ aṣina tuntun",
+    "resetPasswordSubtitle": "Tẹ ọrọ aṣina tuntun rẹ sii. Gbọdọ jẹ o kere ju awọn ohun kikọ 8.",
+    "newPassword": "Ọrọ aṣina tuntun",
+    "resetPasswordButton": "Atunto ọrọ aṣina",
+    "resetPasswordSuccess": "Ọrọ aṣina rẹ ti ni imudojuiwọn. O le wọle bayi."
   },
   "subscriptions": {
     "title": "Awọn Alabapin Mi",

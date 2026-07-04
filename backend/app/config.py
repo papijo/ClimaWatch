@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     MAPBOX_TOKEN: str
     NOAA_TOKEN: str
+    FRONTEND_URL: str = "http://localhost:3000"
+    ADMIN_URL: str = "http://localhost:5173"
 
     # JWT
     JWT_ALGORITHM: str = "HS256"

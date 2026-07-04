@@ -12,7 +12,7 @@ import {
 
 type ContactForm = Omit<GovernmentContact, 'id'>
 
-const EMPTY: ContactForm = { state_id: '', name: '', role: '', phone: null, email: null }
+const EMPTY: ContactForm = { state_id: '', name: '', title: '', ministry: '', phone: null, email: '' }
 
 export default function Contacts() {
   const [states, setStates] = useState<StateItem[]>([])
@@ -44,7 +44,7 @@ export default function Contacts() {
   const startEdit = (c: GovernmentContact) => {
     setEditing(c)
     setAdding(false)
-    setForm({ state_id: c.state_id, name: c.name, role: c.role, phone: c.phone, email: c.email })
+    setForm({ state_id: c.state_id, name: c.name, title: c.title, ministry: c.ministry, phone: c.phone, email: c.email })
     setError('')
   }
 
@@ -54,8 +54,8 @@ export default function Contacts() {
   }
 
   const save = async () => {
-    if (!form.state_id || !form.name || !form.role) {
-      setError('State, name, and role are required.')
+    if (!form.state_id || !form.name || !form.title || !form.ministry || !form.email) {
+      setError('State, name, title, ministry, and email are required.')
       return
     }
     setSaving(true)
@@ -81,7 +81,7 @@ export default function Contacts() {
     await reload()
   }
 
-  const field = (
+  const textField = (
     key: keyof ContactForm,
     label: string,
     type = 'text',
@@ -134,10 +134,11 @@ export default function Contacts() {
                 ))}
               </select>
             </div>
-            {field('name', 'Full name', 'text', true)}
-            {field('role', 'Role / title', 'text', true)}
-            {field('phone', 'Phone')}
-            {field('email', 'Email', 'email')}
+            {textField('name', 'Full name', 'text', true)}
+            {textField('title', 'Title / designation', 'text', true)}
+            {textField('ministry', 'Ministry', 'text', true)}
+            {textField('email', 'Email', 'email', true)}
+            {textField('phone', 'Phone')}
           </div>
           {error && <p className="text-xs text-red-600 mb-3">{error}</p>}
           <div className="flex items-center gap-3">
@@ -160,7 +161,7 @@ export default function Contacts() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
               <tr>
-                {['State', 'Name', 'Role', 'Phone', 'Email', ''].map((h) => (
+                {['State', 'Name', 'Title', 'Ministry', 'Phone', 'Email', ''].map((h) => (
                   <th key={h} className="text-left px-4 py-3 font-medium whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -170,9 +171,10 @@ export default function Contacts() {
                 <tr key={c.id} className={editing?.id === c.id ? 'bg-blue-50' : 'hover:bg-slate-50'}>
                   <td className="px-4 py-3 text-slate-700 whitespace-nowrap">{stateName(c.state_id)}</td>
                   <td className="px-4 py-3 font-medium text-slate-900">{c.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.role}</td>
+                  <td className="px-4 py-3 text-slate-600">{c.title}</td>
+                  <td className="px-4 py-3 text-slate-600">{c.ministry}</td>
                   <td className="px-4 py-3 text-slate-600">{c.phone ?? '—'}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.email ?? '—'}</td>
+                  <td className="px-4 py-3 text-slate-600">{c.email}</td>
                   <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
                     <button onClick={() => startEdit(c)} className="text-blue-600 hover:underline text-xs">
                       Edit
@@ -185,7 +187,7 @@ export default function Contacts() {
               ))}
               {contacts.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-slate-400 text-sm">
+                  <td colSpan={7} className="px-4 py-10 text-center text-slate-400 text-sm">
                     No contacts yet.
                   </td>
                 </tr>

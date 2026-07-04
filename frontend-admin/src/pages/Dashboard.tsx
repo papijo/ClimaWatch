@@ -135,10 +135,10 @@ export default function Dashboard() {
               ) : assessment ? (
                 <>
                   <div className="space-y-3">
-                    <ScoreBar label="Composite score" value={assessment.composite_score} />
-                    <ScoreBar label="Heat stress" value={assessment.heat_stress_score} />
-                    <ScoreBar label="Flood risk" value={assessment.flood_risk_score} />
-                    <ScoreBar label="Disease risk" value={assessment.disease_risk_score} />
+                    <ScoreBar label="Overall score" value={assessment.overall_score} />
+                    <ScoreBar label="Climate score" value={assessment.climate_score} />
+                    <ScoreBar label="Health score" value={assessment.health_score} />
+                    <ScoreBar label="Vulnerability" value={assessment.vulnerability_score} />
                   </div>
 
                   <div>
