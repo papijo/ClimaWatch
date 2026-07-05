@@ -1,98 +1,104 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getToken } from '../lib/auth'
 import { getLogs, type RiskStateChange } from '../lib/api'
 import RiskBadge from '../components/RiskBadge'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Skeleton } from '@/components/ui/skeleton'
+import { TableToolbar, TablePagination, SortButton, type SortConfig } from '../components/TableToolbar'
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
+}
 
 export default function Logs() {
   const [items, setItems] = useState<RiskStateChange[]>([])
-  const [cursor, setCursor] = useState<string | null>(null)
-  const [prevCursors, setPrevCursors] = useState<string[]>([])
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState<SortConfig>({ key: 'changed_at', dir: 'desc' })
   const [loading, setLoading] = useState(true)
-
   const token = getToken()!
 
-  const load = async (c?: string) => {
+  const load = useCallback(async (p = page) => {
     setLoading(true)
     try {
-      const res = await getLogs(token, c)
+      const res = await getLogs(token, {
+        search: search || undefined,
+        sortDir: sort.dir,
+        page: p,
+        limit,
+      })
       setItems(res.items)
-      setCursor(res.next_cursor)
+      setTotal(res.total)
+      setTotalPages(res.total_pages)
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, search, sort.dir, limit, page])
 
-  useEffect(() => { load() }, [token])
+  useEffect(() => {
+    setPage(1)
+    load(1)
+  }, [search, sort.dir, limit]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const next = () => {
-    if (!cursor) return
-    setPrevCursors((p) => [...p, cursor])
-    load(cursor)
-  }
+  useEffect(() => { load(page) }, [page]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const prev = () => {
-    const stack = [...prevCursors]
-    const c = stack.pop()
-    setPrevCursors(stack)
-    load(c)
-  }
+  const handleSort = (_key: string, dir: 'asc' | 'desc') => setSort({ key: 'changed_at', dir })
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold text-slate-900 mb-6">Risk Change Logs</h1>
+      <div className="rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 overflow-hidden">
+        <TableToolbar search={search} onSearch={(v) => setSearch(v)} placeholder="Search by state name…" />
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
-              <tr>
-                {['State', 'From', 'To', 'Reason', 'Date'].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 font-medium whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>State</TableHead>
+                <TableHead>From</TableHead>
+                <TableHead>To</TableHead>
+                <TableHead>Reason</TableHead>
+                <TableHead>
+                  <SortButton label="Date" field="changed_at" current={sort} onChange={handleSort} />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {loading ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-slate-400 text-sm">Loading…</td>
-                </tr>
+                Array.from({ length: limit }).map((_, i) => (
+                  <TableRow key={i}>
+                    {Array.from({ length: 5 }).map((__, j) => (
+                      <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+                    ))}
+                  </TableRow>
+                ))
               ) : items.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-slate-400 text-sm">No risk changes recorded yet.</td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-12">
+                    {search ? 'No log entries match your search.' : 'No risk changes recorded yet.'}
+                  </TableCell>
+                </TableRow>
               ) : (
                 items.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{item.state_name}</td>
-                    <td className="px-4 py-3"><RiskBadge level={item.from_level} /></td>
-                    <td className="px-4 py-3"><RiskBadge level={item.to_level} /></td>
-                    <td className="px-4 py-3 text-slate-600 max-w-xs truncate">{item.reason ?? '—'}</td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
-                      {new Date(item.changed_at).toLocaleString()}
-                    </td>
-                  </tr>
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.state_name}</TableCell>
+                    <TableCell><RiskBadge level={item.from_level} /></TableCell>
+                    <TableCell><RiskBadge level={item.to_level} /></TableCell>
+                    <TableCell className="text-muted-foreground max-w-xs truncate">{item.reason ?? '—'}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(item.changed_at)}</TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
-        <div className="px-4 py-3 border-t border-slate-100 flex justify-between">
-          <button
-            onClick={prev}
-            disabled={prevCursors.length === 0}
-            className="text-sm text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            ← Previous
-          </button>
-          <button
-            onClick={next}
-            disabled={!cursor}
-            className="text-sm text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Next →
-          </button>
-        </div>
+        <TablePagination
+          page={page} limit={limit} total={total} totalPages={totalPages}
+          onPageChange={setPage} onLimitChange={setLimit}
+        />
       </div>
     </div>
   )

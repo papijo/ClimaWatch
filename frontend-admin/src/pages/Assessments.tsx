@@ -1,133 +1,122 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getToken } from '../lib/auth'
 import { getStates, getAssessments, type StateItem, type Assessment } from '../lib/api'
 import RiskBadge from '../components/RiskBadge'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+import { TableToolbar, TablePagination, SortButton, type SortConfig } from '../components/TableToolbar'
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
+}
 
 export default function Assessments() {
   const [states, setStates] = useState<StateItem[]>([])
   const [stateId, setStateId] = useState('')
   const [items, setItems] = useState<Assessment[]>([])
-  const [cursor, setCursor] = useState<string | null>(null)
-  const [prevCursors, setPrevCursors] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
-
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState<SortConfig>({ key: 'assessed_at', dir: 'desc' })
+  const [loading, setLoading] = useState(true)
   const token = getToken()!
 
-  const load = async (sid?: string, c?: string) => {
+  const load = useCallback(async (p = page) => {
     setLoading(true)
     try {
-      const res = await getAssessments(token, sid, c)
+      const res = await getAssessments(token, {
+        stateId: stateId || undefined,
+        search: search || undefined,
+        sortDir: sort.dir,
+        page: p,
+        limit,
+      })
       setItems(res.items)
-      setCursor(res.next_cursor)
+      setTotal(res.total)
+      setTotalPages(res.total_pages)
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, stateId, search, sort.dir, limit, page])
+
+  useEffect(() => { getStates(token).then(setStates) }, [token])
 
   useEffect(() => {
-    getStates(token).then(setStates)
-    load()
-  }, [token])
+    setPage(1)
+    load(1)
+  }, [stateId, search, sort.dir, limit]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleFilter = () => {
-    setPrevCursors([])
-    load(stateId || undefined)
-  }
+  useEffect(() => { load(page) }, [page]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const next = () => {
-    if (!cursor) return
-    setPrevCursors((p) => [...p, cursor])
-    load(stateId || undefined, cursor)
-  }
-
-  const prev = () => {
-    const stack = [...prevCursors]
-    const c = stack.pop()
-    setPrevCursors(stack)
-    load(stateId || undefined, c)
-  }
-
-  const stateName = (id: string) => states.find((s) => s.id === id)?.name ?? id
+  const handleSort = (_key: string, dir: 'asc' | 'desc') => setSort({ key: 'assessed_at', dir })
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold text-slate-900 mb-6">Assessment History</h1>
+      <div className="rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 overflow-hidden">
+        <TableToolbar search={search} onSearch={(v) => setSearch(v)} placeholder="Search by state name…">
+          <Select value={stateId || 'all'} onValueChange={(v) => setStateId(v === 'all' ? '' : v)}>
+            <SelectTrigger className="h-8 w-44 text-sm">
+              <SelectValue placeholder="All states" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All states</SelectItem>
+              {states.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </TableToolbar>
 
-      <div className="flex gap-3 mb-6">
-        <select
-          value={stateId}
-          onChange={(e) => setStateId(e.target.value)}
-          className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
-        >
-          <option value="">All states</option>
-          {states.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
-        <button
-          onClick={handleFilter}
-          className="bg-slate-900 text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors"
-        >
-          Filter
-        </button>
-      </div>
-
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
-              <tr>
-                {['State', 'Risk', 'Overall', 'Climate', 'Health', 'Vulnerability', 'Date'].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 font-medium whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>State</TableHead>
+                <TableHead>Risk</TableHead>
+                <TableHead>Overall</TableHead>
+                <TableHead>Climate</TableHead>
+                <TableHead>Health</TableHead>
+                <TableHead>Vulnerability</TableHead>
+                <TableHead>
+                  <SortButton label="Date" field="assessed_at" current={sort} onChange={handleSort} />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-400 text-sm">Loading…</td>
-                </tr>
+                Array.from({ length: limit }).map((_, i) => (
+                  <TableRow key={i}>
+                    {Array.from({ length: 7 }).map((__, j) => (
+                      <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+                    ))}
+                  </TableRow>
+                ))
               ) : items.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-400 text-sm">No assessments found.</td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-12">No assessments found.</TableCell>
+                </TableRow>
               ) : (
                 items.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">
-                      {stateName(item.state_id)}
-                    </td>
-                    <td className="px-4 py-3"><RiskBadge level={item.risk_level} /></td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.overall_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.climate_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.health_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{item.vulnerability_score.toFixed(1)}</td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
-                      {new Date(item.assessed_at).toLocaleString()}
-                    </td>
-                  </tr>
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.state_name}</TableCell>
+                    <TableCell><RiskBadge level={item.risk_level} /></TableCell>
+                    <TableCell className="font-mono">{item.overall_score.toFixed(1)}</TableCell>
+                    <TableCell className="font-mono">{item.climate_score.toFixed(1)}</TableCell>
+                    <TableCell className="font-mono">{item.health_score.toFixed(1)}</TableCell>
+                    <TableCell className="font-mono">{item.vulnerability_score.toFixed(1)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(item.assessed_at)}</TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
-        <div className="px-4 py-3 border-t border-slate-100 flex justify-between">
-          <button
-            onClick={prev}
-            disabled={prevCursors.length === 0}
-            className="text-sm text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            ← Previous
-          </button>
-          <button
-            onClick={next}
-            disabled={!cursor}
-            className="text-sm text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Next →
-          </button>
-        </div>
+        <TablePagination
+          page={page} limit={limit} total={total} totalPages={totalPages}
+          onPageChange={setPage} onLimitChange={setLimit}
+        />
       </div>
     </div>
   )

@@ -9,6 +9,7 @@ import Contacts from './pages/Contacts'
 import Logs from './pages/Logs'
 import Assessments from './pages/Assessments'
 import Scheduler from './pages/Scheduler'
+import Pipeline from './pages/Pipeline'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/logs" element={<Logs />} />
             <Route path="/assessments" element={<Assessments />} />
             <Route path="/scheduler" element={<Scheduler />} />
+            <Route path="/pipeline" element={<Pipeline />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

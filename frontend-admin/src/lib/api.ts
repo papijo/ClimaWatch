@@ -22,12 +22,16 @@ async function request<T>(path: string, init: RequestInit = {}, token?: string):
   return res.json() as Promise<T>
 }
 
-// --- Types ---
+// ── Types ──────────────────────────────────────────────────────────────────────
 
 export interface StateItem {
   id: string
   name: string
   code: string
+  region: string
+  capital: string
+  latitude: number
+  longitude: number
   current_risk_level: string
   last_assessed_at: string | null
 }
@@ -35,6 +39,7 @@ export interface StateItem {
 export interface Assessment {
   id: string
   state_id: string
+  state_name: string
   risk_level: string
   overall_score: number
   climate_score: number
@@ -50,6 +55,7 @@ export interface Assessment {
 export interface GovernmentContact {
   id: string
   state_id: string
+  state_name: string
   name: string
   title: string
   ministry: string
@@ -67,14 +73,12 @@ export interface RiskStateChange {
   changed_at: string
 }
 
-export interface AssessmentHistoryResponse {
-  items: Assessment[]
-  next_cursor: string | null
-}
-
-export interface LogsResponse {
-  items: RiskStateChange[]
-  next_cursor: string | null
+export interface PaginatedResponse<T> {
+  items: T[]
+  total: number
+  page: number
+  limit: number
+  total_pages: number
 }
 
 export interface SchedulerStatus {
@@ -89,7 +93,29 @@ export interface LoginResponse {
   token_type: string
 }
 
-// --- Auth ---
+export interface ActiveAlert {
+  id: string
+  state_id: string
+  title: string
+  description: string
+  risk_level: string
+  is_active: boolean
+  started_at: string
+  ended_at: string | null
+}
+
+export interface PipelineSource {
+  source: string
+  label: string
+  type: 'api' | 'dataset'
+  description: string
+  can_trigger: boolean
+  last_run: string | null
+  records_stored: number
+  status: 'ok' | 'error' | 'never'
+}
+
+// ── Auth ───────────────────────────────────────────────────────────────────────
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
   return request<LoginResponse>('/api/auth/login', {
@@ -98,39 +124,67 @@ export async function login(email: string, password: string): Promise<LoginRespo
   })
 }
 
-// --- States ---
+// ── States ─────────────────────────────────────────────────────────────────────
 
 export async function getStates(token: string): Promise<StateItem[]> {
   return request<StateItem[]>('/api/states', {}, token)
 }
 
-// --- Admin: Assessments ---
+// ── Assessments ────────────────────────────────────────────────────────────────
+
+export interface AssessmentParams {
+  stateId?: string
+  search?: string
+  sortDir?: 'asc' | 'desc'
+  page?: number
+  limit?: number
+}
 
 export async function getAssessments(
   token: string,
-  stateId?: string,
-  cursor?: string,
-): Promise<AssessmentHistoryResponse> {
-  const params = new URLSearchParams()
-  if (stateId) params.set('state_id', stateId)
-  if (cursor) params.set('cursor', cursor)
-  const qs = params.toString() ? `?${params.toString()}` : ''
-  return request<AssessmentHistoryResponse>(`/api/admin/assessments${qs}`, {}, token)
+  params: AssessmentParams = {},
+): Promise<PaginatedResponse<Assessment>> {
+  const qs = new URLSearchParams()
+  if (params.stateId) qs.set('state_id', params.stateId)
+  if (params.search) qs.set('search', params.search)
+  if (params.sortDir) qs.set('sort_dir', params.sortDir)
+  if (params.page) qs.set('page', String(params.page))
+  if (params.limit) qs.set('limit', String(params.limit))
+  const q = qs.toString() ? `?${qs.toString()}` : ''
+  return request<PaginatedResponse<Assessment>>(`/api/admin/assessments${q}`, {}, token)
 }
 
 export async function triggerAssessment(token: string, stateId: string): Promise<{ message: string }> {
   return request<{ message: string }>(`/api/admin/trigger/${stateId}`, { method: 'POST' }, token)
 }
 
-// --- Admin: Contacts ---
+// ── Contacts ───────────────────────────────────────────────────────────────────
 
-export async function getContacts(token: string): Promise<GovernmentContact[]> {
-  return request<GovernmentContact[]>('/api/admin/contacts', {}, token)
+export interface ContactsParams {
+  search?: string
+  sortBy?: string
+  sortDir?: 'asc' | 'desc'
+  page?: number
+  limit?: number
+}
+
+export async function getContacts(
+  token: string,
+  params: ContactsParams = {},
+): Promise<PaginatedResponse<GovernmentContact>> {
+  const qs = new URLSearchParams()
+  if (params.search) qs.set('search', params.search)
+  if (params.sortBy) qs.set('sort_by', params.sortBy)
+  if (params.sortDir) qs.set('sort_dir', params.sortDir)
+  if (params.page) qs.set('page', String(params.page))
+  if (params.limit) qs.set('limit', String(params.limit))
+  const q = qs.toString() ? `?${qs.toString()}` : ''
+  return request<PaginatedResponse<GovernmentContact>>(`/api/admin/contacts${q}`, {}, token)
 }
 
 export async function createContact(
   token: string,
-  data: Omit<GovernmentContact, 'id'>,
+  data: Omit<GovernmentContact, 'id' | 'state_name'>,
 ): Promise<GovernmentContact> {
   return request<GovernmentContact>('/api/admin/contacts', {
     method: 'POST',
@@ -141,7 +195,7 @@ export async function createContact(
 export async function updateContact(
   token: string,
   id: string,
-  data: Partial<Omit<GovernmentContact, 'id'>>,
+  data: Partial<Omit<GovernmentContact, 'id' | 'state_name'>>,
 ): Promise<GovernmentContact> {
   return request<GovernmentContact>(`/api/admin/contacts/${id}`, {
     method: 'PUT',
@@ -153,14 +207,52 @@ export async function deleteContact(token: string, id: string): Promise<void> {
   await request<void>(`/api/admin/contacts/${id}`, { method: 'DELETE' }, token)
 }
 
-// --- Admin: Logs ---
+// ── Risk change logs ───────────────────────────────────────────────────────────
 
-export async function getLogs(token: string, cursor?: string): Promise<LogsResponse> {
-  const qs = cursor ? `?cursor=${cursor}` : ''
-  return request<LogsResponse>(`/api/admin/logs${qs}`, {}, token)
+export interface LogsParams {
+  search?: string
+  sortDir?: 'asc' | 'desc'
+  page?: number
+  limit?: number
 }
 
-// --- Password reset ---
+export async function getLogs(
+  token: string,
+  params: LogsParams = {},
+): Promise<PaginatedResponse<RiskStateChange>> {
+  const qs = new URLSearchParams()
+  if (params.search) qs.set('search', params.search)
+  if (params.sortDir) qs.set('sort_dir', params.sortDir)
+  if (params.page) qs.set('page', String(params.page))
+  if (params.limit) qs.set('limit', String(params.limit))
+  const q = qs.toString() ? `?${qs.toString()}` : ''
+  return request<PaginatedResponse<RiskStateChange>>(`/api/admin/logs${q}`, {}, token)
+}
+
+// ── Alerts (public) ────────────────────────────────────────────────────────────
+
+export async function getActiveAlerts(): Promise<ActiveAlert[]> {
+  return request<ActiveAlert[]>('/api/alerts/active')
+}
+
+// ── Pipeline ───────────────────────────────────────────────────────────────────
+
+export async function getPipelineStatus(token: string): Promise<PipelineSource[]> {
+  return request<PipelineSource[]>('/api/admin/pipeline/status', {}, token)
+}
+
+export async function triggerPipeline(
+  token: string,
+  sourceKey: string,
+): Promise<{ message: string; source: string }> {
+  return request<{ message: string; source: string }>(
+    `/api/admin/pipeline/trigger/${sourceKey}`,
+    { method: 'POST' },
+    token,
+  )
+}
+
+// ── Password reset ─────────────────────────────────────────────────────────────
 
 export async function forgotPassword(email: string): Promise<{ message: string }> {
   return request<{ message: string }>('/api/auth/forgot-password', {
@@ -176,7 +268,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
   })
 }
 
-// --- Admin: Scheduler ---
+// ── Scheduler ──────────────────────────────────────────────────────────────────
 
 export async function getSchedulerStatus(token: string): Promise<SchedulerStatus[]> {
   return request<SchedulerStatus[]>('/api/admin/scheduler/status', {}, token)

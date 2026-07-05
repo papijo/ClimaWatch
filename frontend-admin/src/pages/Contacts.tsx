@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { getToken } from '../lib/auth'
 import {
   getStates,
@@ -9,67 +10,95 @@ import {
   type StateItem,
   type GovernmentContact,
 } from '../lib/api'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+import { TableToolbar, TablePagination, SortButton, type SortConfig } from '../components/TableToolbar'
 
-type ContactForm = Omit<GovernmentContact, 'id'>
-
+type ContactForm = Omit<GovernmentContact, 'id' | 'state_name'>
 const EMPTY: ContactForm = { state_id: '', name: '', title: '', ministry: '', phone: null, email: '' }
 
 export default function Contacts() {
   const [states, setStates] = useState<StateItem[]>([])
-  const [contacts, setContacts] = useState<GovernmentContact[]>([])
+  const [items, setItems] = useState<GovernmentContact[]>([])
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState<SortConfig>({ key: 'state', dir: 'asc' })
+  const [loading, setLoading] = useState(true)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<GovernmentContact | null>(null)
-  const [adding, setAdding] = useState(false)
   const [form, setForm] = useState<ContactForm>(EMPTY)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-
+  const [formError, setFormError] = useState('')
   const token = getToken()!
 
-  const reload = () => getContacts(token).then(setContacts)
+  const load = useCallback(async (p = page) => {
+    setLoading(true)
+    try {
+      const res = await getContacts(token, {
+        search: search || undefined,
+        sortBy: sort.key,
+        sortDir: sort.dir,
+        page: p,
+        limit,
+      })
+      setItems(res.items)
+      setTotal(res.total)
+      setTotalPages(res.total_pages)
+    } finally {
+      setLoading(false)
+    }
+  }, [token, search, sort, limit, page])
+
+  useEffect(() => { getStates(token).then(setStates) }, [token])
 
   useEffect(() => {
-    getStates(token).then(setStates)
-    reload()
-  }, [token])
+    setPage(1)
+    load(1)
+  }, [search, sort, limit]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const stateName = (id: string) => states.find((s) => s.id === id)?.name ?? id
+  useEffect(() => {
+    load(page)
+  }, [page]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const startAdd = () => {
-    setAdding(true)
-    setEditing(null)
-    setForm(EMPTY)
-    setError('')
-  }
+  const handleSort = (key: string, dir: 'asc' | 'desc') => setSort({ key, dir })
 
-  const startEdit = (c: GovernmentContact) => {
+  const openAdd = () => { setEditing(null); setForm(EMPTY); setFormError(''); setDialogOpen(true) }
+  const openEdit = (c: GovernmentContact) => {
     setEditing(c)
-    setAdding(false)
     setForm({ state_id: c.state_id, name: c.name, title: c.title, ministry: c.ministry, phone: c.phone, email: c.email })
-    setError('')
-  }
-
-  const cancel = () => {
-    setAdding(false)
-    setEditing(null)
+    setFormError('')
+    setDialogOpen(true)
   }
 
   const save = async () => {
     if (!form.state_id || !form.name || !form.title || !form.ministry || !form.email) {
-      setError('State, name, title, ministry, and email are required.')
+      setFormError('State, name, title, ministry, and email are required.')
       return
     }
     setSaving(true)
-    setError('')
+    setFormError('')
     try {
-      if (editing) {
-        await updateContact(token, editing.id, form)
-      } else {
-        await createContact(token, form)
-      }
-      await reload()
-      cancel()
+      if (editing) await updateContact(token, editing.id, form)
+      else await createContact(token, form)
+      setDialogOpen(false)
+      load(page)
     } catch {
-      setError('Save failed. Please try again.')
+      setFormError('Save failed. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -78,124 +107,120 @@ export default function Contacts() {
   const remove = async (id: string) => {
     if (!confirm('Delete this contact?')) return
     await deleteContact(token, id)
-    await reload()
+    load(page)
   }
 
-  const textField = (
-    key: keyof ContactForm,
-    label: string,
-    type = 'text',
-    required = false,
-  ) => (
-    <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
-      <input
+  const field = (key: keyof ContactForm, label: string, type = 'text', required = false) => (
+    <div className="space-y-1.5">
+      <Label htmlFor={key}>
+        {label}{required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      <Input
+        id={key}
         type={type}
         value={(form[key] as string) ?? ''}
         onChange={(e) => setForm({ ...form, [key]: e.target.value || null })}
-        className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
       />
     </div>
   )
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-slate-900">Government Contacts</h1>
-        <button
-          onClick={startAdd}
-          className="bg-slate-900 text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors"
-        >
-          Add contact
-        </button>
-      </div>
+      <div className="rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 overflow-hidden">
+        <TableToolbar search={search} onSearch={(v) => setSearch(v)} placeholder="Search by name, state, ministry…">
+          <Button size="sm" onClick={openAdd}>
+            <Plus size={14} className="mr-1" /> Add contact
+          </Button>
+        </TableToolbar>
 
-      {(adding || editing) && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 mb-6">
-          <h2 className="text-sm font-semibold text-slate-800 mb-4">
-            {editing ? 'Edit contact' : 'New contact'}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                State<span className="text-red-500 ml-0.5">*</span>
-              </label>
-              <select
-                value={form.state_id}
-                onChange={(e) => setForm({ ...form, state_id: e.target.value })}
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
-              >
-                <option value="">Select state</option>
-                {states.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
-            </div>
-            {textField('name', 'Full name', 'text', true)}
-            {textField('title', 'Title / designation', 'text', true)}
-            {textField('ministry', 'Ministry', 'text', true)}
-            {textField('email', 'Email', 'email', true)}
-            {textField('phone', 'Phone')}
-          </div>
-          {error && <p className="text-xs text-red-600 mb-3">{error}</p>}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={save}
-              disabled={saving}
-              className="bg-slate-900 text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-slate-800 disabled:opacity-50 transition-colors"
-            >
-              {saving ? 'Saving…' : editing ? 'Save changes' : 'Create'}
-            </button>
-            <button onClick={cancel} className="text-sm text-slate-500 hover:text-slate-700">
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
-              <tr>
-                {['State', 'Name', 'Title', 'Ministry', 'Phone', 'Email', ''].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 font-medium whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {contacts.map((c) => (
-                <tr key={c.id} className={editing?.id === c.id ? 'bg-blue-50' : 'hover:bg-slate-50'}>
-                  <td className="px-4 py-3 text-slate-700 whitespace-nowrap">{stateName(c.state_id)}</td>
-                  <td className="px-4 py-3 font-medium text-slate-900">{c.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.title}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.ministry}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.phone ?? '—'}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.email}</td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
-                    <button onClick={() => startEdit(c)} className="text-blue-600 hover:underline text-xs">
-                      Edit
-                    </button>
-                    <button onClick={() => remove(c.id)} className="text-red-600 hover:underline text-xs">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {contacts.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-400 text-sm">
-                    No contacts yet.
-                  </td>
-                </tr>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead><SortButton label="State" field="state" current={sort} onChange={handleSort} /></TableHead>
+                <TableHead><SortButton label="Name" field="name" current={sort} onChange={handleSort} /></TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead><SortButton label="Ministry" field="ministry" current={sort} onChange={handleSort} /></TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                Array.from({ length: limit }).map((_, i) => (
+                  <TableRow key={i}>
+                    {Array.from({ length: 7 }).map((__, j) => (
+                      <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
+                    {search ? 'No contacts match your search.' : 'No contacts yet.'}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map((c) => (
+                  <TableRow key={c.id}>
+                    <TableCell className="font-medium">{c.state_name}</TableCell>
+                    <TableCell>{c.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{c.title}</TableCell>
+                    <TableCell className="text-muted-foreground">{c.ministry}</TableCell>
+                    <TableCell className="text-muted-foreground">{c.phone ?? '—'}</TableCell>
+                    <TableCell className="text-muted-foreground">{c.email}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}>
+                          <Pencil size={13} />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => remove(c.id)}>
+                          <Trash2 size={13} />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
+
+        <TablePagination
+          page={page} limit={limit} total={total} totalPages={totalPages}
+          onPageChange={setPage} onLimitChange={setLimit}
+        />
       </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit contact' : 'New contact'}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label>State<span className="text-destructive ml-0.5">*</span></Label>
+              <Select value={form.state_id} onValueChange={(v) => setForm({ ...form, state_id: v })}>
+                <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
+                <SelectContent>
+                  {states.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            {field('name', 'Full name', 'text', true)}
+            {field('title', 'Title / designation', 'text', true)}
+            {field('ministry', 'Ministry', 'text', true)}
+            {field('email', 'Email', 'email', true)}
+            {field('phone', 'Phone')}
+          </div>
+          {formError && <p className="text-xs text-destructive mt-1">{formError}</p>}
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={save} disabled={saving}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Create'}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
